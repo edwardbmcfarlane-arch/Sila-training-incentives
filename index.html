@@ -594,7 +594,7 @@ body{font-family:'DM Sans',sans-serif;color:#E2D9C5}
 `;
 
 function App(){
-  const[tab,setTab]=useState("programs");
+  const[tab,setTab]=useState("home");
   const[loc,setLoc]=useState("");
   const[brandSearch,setBrandSearch]=useState("");
   const[showSug,setShowSug]=useState(false);
@@ -1058,13 +1058,126 @@ ${NEXT_STEPS.map((s,i)=>`
           </div>
         </div>
         <div style={{display:"flex",borderBottom:"1px solid rgba(212,168,50,.14)",marginTop:18,overflowX:"auto"}}>
-          {[{id:"programs",label:"Programs"},{id:"calculator",label:"Calculator"},{id:"guide",label:"💡 Guide"},{id:"acts",label:"Legislation"},{id:"agencies",label:"Agencies"}].map(t=>(
+          {[{id:"home",label:"🏠 Start Here"},{id:"programs",label:"Programs"},{id:"calculator",label:"Calculator"},{id:"guide",label:"💡 Guide"},{id:"acts",label:"Legislation"},{id:"agencies",label:"Agencies"}].map(t=>(
             <button key={t.id} className={`tab-btn${tab===t.id?" on":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
           ))}
         </div>
       </div>
 
       <div style={{maxWidth:980,margin:"0 auto",padding:"20px 16px 60px"}}>
+        {/* HOME — Start Here */}
+        {tab==="home"&&(()=>{
+          const STEPS=[
+            {num:1,icon:"📍",title:"Select Your Location",color:"#5BAA72",tab:"programs",
+              desc:"On the Programs tab, type any brand name, city, or state into the search bar. The tool instantly filters to show your state's direct funding programs plus all federal programs.",
+              detail:"You'll see a real-dollar funding summary at the bottom showing total potential cost offsets for your specific location.",
+              cta:"Open Programs"},
+            {num:2,icon:"🪪",title:"Review License & Field Independence",color:"#6B9EC7",tab:"programs",
+              desc:"With your location selected, expand the Required Licenses panel. It shows every state license needed for HVAC, Plumbing, and Electrical — and a 'When can they work solo?' guide for each trade.",
+              detail:"Knowing the journey from Day 1 to independent revenue generation is essential for workforce planning. Plumbing and electrical techs typically take 3–5 years to reach full field independence.",
+              cta:"See Licenses"},
+            {num:3,icon:"🧮",title:"Model Your Numbers",color:"#D4A832",tab:"calculator",
+              desc:"Go to the Calculator tab. Enter your typical wage, hours, and training weeks. In the WOTC section, check every category your hire qualifies for — the tool automatically picks the highest-value one.",
+              detail:"Toggle OJT, IWT, state credits, and §127 on or off to build your scenario. The total updates live. Try veteran vs. non-veteran to see the difference stacking makes.",
+              cta:"Open Calculator"},
+            {num:4,icon:"💡",title:"Explore Stacking",color:"#A07CC5",tab:"guide",
+              desc:"The Guide tab shows which programs combine legally on the same hire. Most employers only use one program at a time — stacking two or three is where the real offset potential lives.",
+              detail:"The Glossary explains every acronym in plain English. Share it with your ops team so everyone speaks the same language when talking to workforce development contacts.",
+              cta:"Open Guide"},
+            {num:5,icon:"🖨️",title:"Print What You Need",color:"#C8A84B",tab:"programs",
+              desc:"The 🖨️ button in the top right changes based on which tab you're on — print a location-specific one-pager, your calculator results, the legislation reference card, or the full Implementation Tracker.",
+              detail:"The Implementation Tracker (bottom of the Requirements section in Programs) is a printable project checklist with owner, date, and notes fields for each of the 7 priority actions.",
+              cta:"Go to Programs"},
+          ];
+          const SCENARIOS=[
+            {icon:"🎖",q:"What if my next hire is a veteran?",a:"One veteran in a registered apprenticeship can generate WOTC ($9,600), OJT reimbursement (~$3,500), GI Bill housing allowance ($21,600–$32,604/yr paid by the VA), and state credits — all simultaneously. That's $37,000–$50,000+ from a single hire.",tab:"guide",color:"#78B5D8",label:"See Veteran Stack →"},
+            {icon:"🌡️",q:"What if I have Ohio HVAC techs who need NATE certification?",a:"Ohio TechCred reimburses $2,000 per credential earned, up to $30,000 per employer per quarter. Apply every quarter at techcred.ohio.gov. Stack with Ohio IWT ($4,000/employee) for broader training programs. This is the fastest cash-back in Sila's footprint.",tab:"programs",color:"#5BAA72",label:"See Ohio Programs →"},
+            {icon:"⚡",q:"What if I could try a candidate for 4–6 months at $0 labor cost?",a:"That's SkillBridge. Active duty service members train at your facility while DoD pays their full military salary. Register at skillbridge.defense.gov in 30 minutes. Many convert to full-time hires — and then qualify for WOTC + OJT.",tab:"programs",color:"#A07CC5",label:"See SkillBridge →"},
+            {icon:"💵",q:"What if the government reimbursed 50–75% of wages during training?",a:"That's OJT. Contact your local American Job Center, execute an OJT Agreement before the hire starts, and get reimbursed 50–75% of training wages for qualifying new hires. For a $22/hr tech over 8 weeks, that's ~$3,500 back to Sila per hire.",tab:"calculator",color:"#D4A832",label:"Model OJT →"},
+            {icon:"📋",q:"What if in-house training were tax-free for everyone?",a:"A §127 Educational Assistance Plan makes up to $5,250/year of NATE prep, EPA 608, OSHA, and Sila University coursework completely tax-free — no income tax, no FICA for employer or employee. One-time setup (~$1–2K legal fee), permanent annual benefit.",tab:"guide",color:"#8BB5A0",label:"See §127 in Glossary →"},
+            {icon:"📍",q:"What does my specific state actually offer that goes directly to Sila?",a:"Select your brand on Programs to see it. MA: up to $250K (WTFP). MI: up to $900K (Going PRO). OH: $30K/quarter (TechCred). PA: WEDnet + Industry Partnerships + Apprenticeship Tax Credit. DE: Customized Training Grant up to $50K.",tab:"programs",color:"#6B9EC7",label:"Pick Your Location →"},
+          ];
+          return(
+            <div>
+              {/* Scope bar */}
+              <div style={{display:"flex",gap:0,borderRadius:12,overflow:"hidden",marginBottom:24,border:"1.5px solid rgba(212,168,50,.2)"}}>
+                {[
+                  {n:SILA_LOCATIONS.length,l:"Sila Brands",c:"rgba(212,168,50,.12)"},
+                  {n:"15",l:"States Covered",c:"rgba(91,170,114,.08)"},
+                  {n:PROGRAMS.filter(p=>p.directBenefit).length,l:"Direct Offset Programs",c:"rgba(107,158,199,.08)"},
+                  {n:GLOSSARY.length,l:"Defined Terms",c:"rgba(160,124,197,.08)"},
+                  {n:"7",l:"Priority Actions",c:"rgba(232,160,32,.08)"},
+                ].map((s,i)=>(
+                  <div key={i} style={{flex:1,textAlign:"center",padding:"14px 8px",background:s.c,borderRight:i<4?"1px solid rgba(212,168,50,.12)":"none"}}>
+                    <div style={{fontSize:24,fontWeight:900,color:"#D4A832",lineHeight:1,fontFamily:"'DM Sans',sans-serif"}}>{s.n}</div>
+                    <div style={{fontSize:10,color:"#3A5A6A",fontFamily:"'DM Sans',sans-serif",marginTop:3,lineHeight:1.3}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Purpose statement */}
+              <div style={{marginBottom:28,padding:"18px 20px",background:"linear-gradient(135deg,rgba(212,168,50,.07),rgba(212,168,50,.02))",border:"1.5px solid rgba(212,168,50,.22)",borderRadius:13}}>
+                <div className="serif" style={{fontSize:"clamp(16px,2.5vw,21px)",color:"#F5EED8",lineHeight:1.4,marginBottom:10}}>This tool finds every government program that puts money back into Sila's in-house training budget — legally, directly, and often simultaneously.</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#7A9AB0",lineHeight:1.8}}>
+                  It is not about funding external schools. Every program shown as a <span style={{background:"rgba(91,170,114,.14)",color:"#5BAA72",padding:"1px 7px",borderRadius:100,fontSize:11,fontWeight:600,border:"1px solid rgba(91,170,114,.3)"}}>✅ Direct Offset</span> flows money <strong style={{color:"#D0C8B8"}}>to Sila</strong> or reduces a cost Sila would otherwise pay — wage reimbursements, tax credits, state grants, and zero-cost labor programs.
+                </div>
+              </div>
+
+              {/* 5-step workflow */}
+              <div style={{marginBottom:30}}>
+                <div className="cn" style={{marginBottom:14,color:"#D4A832",fontSize:11}}>📖 HOW TO USE THIS TOOL — 5 STEPS</div>
+                <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                  {STEPS.map((s,i)=>(
+                    <div key={i} style={{display:"flex",gap:14,padding:"15px 16px",borderRadius:11,background:"rgba(255,255,255,.03)",border:`1.5px solid rgba(255,255,255,.07)`,transition:"border .15s",alignItems:"flex-start"}}>
+                      <div style={{width:38,height:38,borderRadius:"50%",background:`rgba(${s.color==="#5BAA72"?"91,170,114":s.color==="#6B9EC7"?"107,158,199":s.color==="#D4A832"?"212,168,50":s.color==="#A07CC5"?"160,124,197":"200,168,75"},.15)`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:18}}>{s.icon}</div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
+                          <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:"#E0D8C8"}}>Step {s.num}: {s.title}</span>
+                        </div>
+                        <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#8AA0B0",lineHeight:1.7,marginBottom:4}}>{s.desc}</div>
+                        <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#4A6A7A",lineHeight:1.6}}>{s.detail}</div>
+                      </div>
+                      <button onClick={()=>setTab(s.tab)} style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:s.color,background:`rgba(${s.color==="#5BAA72"?"91,170,114":s.color==="#6B9EC7"?"107,158,199":s.color==="#D4A832"?"212,168,50":s.color==="#A07CC5"?"160,124,197":"200,168,75"},.1)`,border:`1.5px solid ${s.color}40`,borderRadius:8,padding:"8px 13px",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,transition:"all .15s",alignSelf:"flex-start",marginTop:2}}>
+                        {s.cta} →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* What If scenarios */}
+              <div style={{marginBottom:24}}>
+                <div className="cn" style={{marginBottom:14,color:"#A07CC5",fontSize:11}}>💭 WHAT IF? — SCENARIOS TO EXPLORE</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(290px,1fr))",gap:10}}>
+                  {SCENARIOS.map((s,i)=>(
+                    <div key={i} style={{background:"rgba(255,255,255,.03)",border:"1.5px solid rgba(255,255,255,.07)",borderRadius:11,padding:"14px 15px",display:"flex",flexDirection:"column",gap:8,transition:"border .15s"}}>
+                      <div style={{display:"flex",gap:9,alignItems:"flex-start"}}>
+                        <span style={{fontSize:20,flexShrink:0}}>{s.icon}</span>
+                        <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:"#E0D8C8",lineHeight:1.4}}>{s.q}</div>
+                      </div>
+                      <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#6A8AAA",lineHeight:1.7,flex:1}}>{s.a}</div>
+                      <button onClick={()=>setTab(s.tab)} style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:s.color,background:`rgba(${s.color==="#78B5D8"?"120,181,216":s.color==="#5BAA72"?"91,170,114":s.color==="#D4A832"?"212,168,50":s.color==="#A07CC5"?"160,124,197":s.color==="#8BB5A0"?"139,181,160":"107,158,199"},.1)`,border:`1.5px solid ${s.color}40`,borderRadius:7,padding:"7px 12px",cursor:"pointer",alignSelf:"flex-start",transition:"all .15s"}}>
+                        {s.label}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Big CTA */}
+              <div style={{background:"linear-gradient(135deg,rgba(91,170,114,.12),rgba(91,170,114,.04))",border:"2px solid rgba(91,170,114,.35)",borderRadius:13,padding:"20px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:14}}>
+                <div>
+                  <div className="serif" style={{fontSize:18,color:"#F5EED8",marginBottom:4}}>Ready to see what's available for your brand?</div>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#5A8A7A"}}>Start by typing your brand name or state — takes 5 seconds to see your full funding picture.</div>
+                </div>
+                <button onClick={()=>setTab("programs")} style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:"#0A1826",background:"#5BAA72",border:"none",borderRadius:9,padding:"12px 24px",cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(91,170,114,.35)",transition:"all .15s"}}>
+                  📍 Select My Location →
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+
         {tab==="programs"&&(
           <div>
             {/* Location picker with typeahead */}
