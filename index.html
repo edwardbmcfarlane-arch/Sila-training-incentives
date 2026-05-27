@@ -20,7 +20,7 @@ body{font-family:'DM Sans',sans-serif;color:#E2D9C5;min-height:100vh}
 <div id="root"></div>
 <script>
 const KB_LAST_UPDATED="May 2026";
-const KB_VERSION_HISTORY=[{v:"v2.0",date:"May 2026",notes:"Full rebuild: 45 brand locations, state-aware filtering, Presidential EO, GI Bill, Pell Grants, 15 state programs, trades focus."},{v:"v1.0",date:"May 2026",notes:"Initial release."}];
+const KB_VERSION_HISTORY=[{v:"v2.1",date:"May 2026",notes:"Added start URLs per program, state/federal grouping, Funding Summary with subtotals, Requirements & Next Steps."},{v:"v2.0",date:"May 2026",notes:"Full rebuild: 45 locations, Presidential EO, GI Bill, Pell, 15 state programs."},{v:"v1.0",date:"May 2026",notes:"Initial release."}];
 const PRESIDENTIAL_MANDATE={
   title:"Preparing Americans for High-Paying Skilled Trade Jobs of the Future",
   eo:"Executive Order — April 23, 2025",president:"President Donald J. Trump",
@@ -90,96 +90,108 @@ const WOTC_CATEGORIES=[
   {label:"Disabled Veteran",maxCredit:4800},
   {label:"Long-term TANF recipient",maxCredit:9000}
 ];
+
+// calcMax = dollar value used in Funding Summary totals
+// valueBasis = label for total table ("per hire","per employee","per apprentice","project grant","lump sum")
 const PROGRAMS=[
-  // PRESIDENTIAL
-  {id:100,name:"Registered Apprenticeship — EO Priority (Fast-Track)",states:["ALL"],trades:["ALL"],category:"Presidential",type:"Grant + Expedited Access",level:"Federal",agency:"DOL Office of Apprenticeship",act:"Exec. Order 'Preparing Americans for High-Paying Skilled Trade Jobs' (Apr 23, 2025)",maxBenefit:7000,benefitUnit:"per apprentice (combined credits)",eligibility:"All employers. Trades are explicit priority sectors under the EO. Processing times reduced under EO directive.",howToApply:"Register at apprenticeship.gov — streamlined under EO mandate. Partner with local American Job Center to fast-track. File for state apprenticeship credit simultaneously.",notes:"🔥 HIGHEST PRIORITY ACTION NOW: The Trump EO explicitly targets HVAC, Plumbing, and Electrical for apprenticeship expansion. Registering positions Sila brands to capture expanded federal grants as the 120-day plan rolls out, IRA bonus credits, and any new congressional tax incentives. The administration has stated trades are 'one of the few areas where this administration says we want more of this.'",tags:["presidential","EO","apprenticeship","trades","priority"]},
-  // FEDERAL TAX
-  {id:1,name:"Work Opportunity Tax Credit (WOTC)",states:["ALL"],trades:["ALL"],category:"Federal-Tax",type:"Tax Credit",level:"Federal",agency:"IRS / Department of Labor",act:"Consolidated Appropriations Act (extended through 2025)",maxBenefit:9600,benefitUnit:"per hire",eligibility:"Employers hiring from 10 target groups: veterans, SNAP recipients, ex-felons, vocational rehab referrals, summer youth, SSI recipients, long-term unemployed (27+ weeks), community residents, TANF recipients",howToApply:"File IRS Form 8850 within 28 days of employee start date; submit to State Workforce Agency (SWA). Deadline is critical — missing it forfeits the credit permanently.",notes:"40% of first $6,000 wages for most categories. Up to $9,600 for certain veterans. Stack with OJT reimbursement. Trade apprentices from target groups generate BOTH WOTC AND apprenticeship grants simultaneously.",tags:["WOTC","tax credit","hiring","veteran","reentry","SNAP"]},
-  {id:2,name:"§127 Educational Assistance Plan",states:["ALL"],trades:["ALL"],category:"Federal-Tax",type:"Tax Exclusion",level:"Federal",agency:"IRS",act:"Internal Revenue Code Section 127",maxBenefit:5250,benefitUnit:"per employee/year tax-free",eligibility:"All employers with a written qualified educational assistance plan",howToApply:"Establish a written §127 plan document; benefits deductible to employer, excluded from employee income and FICA",notes:"Employer deducts 100% of training cost AND employee pays zero income or FICA tax on the benefit. Covers NATE certification prep, trade apprenticeship coursework, community college HVAC/plumbing programs, ServiceTitan training, technology certifications.",tags:["education","tuition","certification","§127","NATE","EPA 608"]},
-  {id:3,name:"IRA Clean Energy Apprenticeship Bonus Credits",states:["ALL"],trades:["HVAC","Electrical"],category:"Federal-Tax",type:"Tax Incentive Bonus",level:"Federal",agency:"IRS / DOE",act:"Inflation Reduction Act (2022) §§48C, 45V, 48E",maxBenefit:null,benefitUnit:"10% bonus on clean energy credits for prevailing wage + apprenticeship",eligibility:"HVAC and electrical employers installing qualifying clean energy systems (heat pumps, mini-splits, EV chargers). Prevailing wage + registered apprenticeship compliance required for bonus tier.",howToApply:"Ensure DOL-registered apprenticeship is in place before work commences; maintain prevailing wage records; claim bonus on applicable IRS forms",notes:"Heat pump and mini-split HVAC installers are directly in scope. Dave's World (ME, 130 employees, specializes in heat pumps) is ideally positioned. Bonus is a % of underlying credit — significant on large residential/commercial projects.",tags:["IRA","heat pump","HVAC","clean energy","Dave's World","bonus"]},
-  {id:4,name:"R&E Credit — Training Technology & Curriculum",states:["ALL"],trades:["Technology"],category:"Federal-Tax",type:"Tax Credit",level:"Federal",agency:"IRS",act:"IRC §41",maxBenefit:null,benefitUnit:"20% of qualified research wages above base",eligibility:"Employers developing new training methodologies, proprietary curricula, LMS platforms, or diagnostic assessment systems",howToApply:"File IRS Form 6765; document qualified research activities and related wages",notes:"Sila University curriculum development, ServiceTitan / field technology training programs, and novel diagnostic training approaches can qualify. Often overlooked — work with a tax advisor specializing in this credit.",tags:["R&D","curriculum","Sila University","LMS","technology"]},
-  // FEDERAL GRANTS
-  {id:10,name:"On-the-Job Training (OJT) — WIOA Title I",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Federal-Wage",type:"Wage Reimbursement",level:"Federal",agency:"DOL / Local Workforce Development Boards",act:"Workforce Innovation and Opportunity Act (WIOA) 2014",maxBenefit:75,benefitUnit:"% of wages reimbursed during training",eligibility:"Employers hiring WIOA-eligible workers: dislocated workers, low-income adults, youth 14-24. Employer must commit to permanent placement.",howToApply:"Contact local American Job Center or WDB BEFORE hiring; execute OJT agreement first, then hire. Retroactive claims are not permitted.",notes:"50-75% of trade apprentice wages reimbursed during training (typically 3-6 months). New HVAC technician at $22/hr for 16 weeks = ~$5,632 reimbursed at 50%. Stackable with WOTC and apprenticeship grants.",tags:["OJT","wage reimbursement","WIOA","new hire","trades","WDB"]},
-  {id:11,name:"Incumbent Worker Training (IWT) — WIOA Title I",states:["ALL"],trades:["ALL"],category:"Federal-Wage",type:"Grant",level:"Federal / State",agency:"State Workforce Agencies / WDBs",act:"Workforce Innovation and Opportunity Act (WIOA)",maxBenefit:50,benefitUnit:"% of training costs (no new hire required)",eligibility:"Existing employees being upskilled to prevent layoffs or advance wages. No income limit on employees. Employer match required (10-50% based on size).",howToApply:"Apply through local Workforce Development Board with a training plan and cost breakdown before training begins",notes:"Covers NATE certifications, EPA 608, OSHA 10/30, ServiceTitan, advanced trade skills, technology upskilling. Ask your WDB about multi-employer IWT grants — multiple smaller Sila brands can apply jointly.",tags:["incumbent","upskill","current employees","NATE","EPA 608","OSHA","ServiceTitan"]},
-  {id:12,name:"Federal Bonding Program",states:["ALL"],trades:["ALL"],category:"Federal-Grant",type:"Benefit-in-Kind",level:"Federal",agency:"DOL ETA",act:"WIOA",maxBenefit:25000,benefitUnit:"free fidelity bond coverage per hire",eligibility:"Employers hiring at-risk individuals: ex-offenders, recovering addicts, homeless individuals, economically disadvantaged youth",howToApply:"Contact State Bonding Coordinator via American Job Center; free, minimal paperwork",notes:"Removes a significant trades hiring barrier. Ex-offenders and at-risk workers are strong apprenticeship candidates but bond requirements often disqualify them. This program eliminates that risk at zero cost to employer.",tags:["bonding","reentry","ex-offender","at-risk","hiring"]},
-  // VETERANS
-  {id:30,name:"Post-9/11 GI Bill (Ch. 33) — OJT & Apprenticeship",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Veterans",type:"Education Benefit",level:"Federal",agency:"VA / Department of Veterans Affairs",act:"Post-9/11 Veterans Educational Assistance Act (Chapter 33)",maxBenefit:2717,benefitUnit:"monthly housing allowance paid by VA to veteran apprentice",eligibility:"Veterans with 90+ days active service after 9/10/2001. Employer must have VA-approved OJT/apprenticeship program.",howToApply:"Employer: VA-approve your apprenticeship at va.gov/education. Veteran: apply for benefits at va.gov. Both steps required — takes 4-6 weeks to set up.",notes:"VA pays a Monthly Housing Allowance ($1,800-$2,717/month, varies by zip code) PLUS $83/month book stipend DIRECTLY TO THE VETERAN during their apprenticeship — on top of their Sila wage. Employer pays NOTHING extra. This is the most powerful veteran recruiting tool available in trades.",tags:["GI Bill","Post-9/11","veteran","Chapter 33","housing allowance","apprenticeship"]},
-  {id:31,name:"VA Vocational Rehabilitation & Employment (Ch. 31)",states:["ALL"],trades:["ALL"],category:"Veterans",type:"Education Benefit",level:"Federal",agency:"VA / VR&E Service",act:"Vocational Rehabilitation and Employment (Chapter 31)",maxBenefit:null,benefitUnit:"Full training costs + monthly subsistence allowance for disabled veteran",eligibility:"Veterans with service-connected disability rating of 20%+ (or 10%+ with serious employment handicap). Employer offers OJT/apprenticeship.",howToApply:"Work with VA VR&E counselors to develop OJT plans; employer submits job description and training outline",notes:"VA pays ALL training costs AND provides monthly subsistence allowance to the veteran. For disabled veterans entering trades, this is the richest benefit. Helmets to Hardhats is a good referral source for VR&E-eligible candidates.",tags:["disability","veteran","VR&E","Chapter 31","subsistence","free training"]},
-  {id:32,name:"DOD SkillBridge — Active Duty to Trades",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Veterans",type:"Free Labor Pipeline",level:"Federal",agency:"Department of Defense",act:"National Defense Authorization Act (NDAA)",maxBenefit:null,benefitUnit:"DOD pays full military salary — employer cost is $0",eligibility:"Active duty service members within 180 days of separation. Employer provides internship/apprenticeship lasting 4-6 months.",howToApply:"Register as SkillBridge employer partner at skillbridge.defense.gov; post opportunities; receive pre-screened candidates",notes:"DOD pays their full military salary for 4-6 months while they apprentice at Sila — employer labor cost is ZERO. Motivated, disciplined, technically trained candidates. Navy/Air Force mechanical MOSs map directly to HVAC/electrical. Many SkillBridge participants convert to full-time hires. This may be the most underused program in home services.",tags:["SkillBridge","active duty","free labor","military","pipeline","transition","zero cost"]},
-  {id:33,name:"Helmets to Hardhats",states:["ALL"],trades:["HVAC","Plumbing","Electrical"],category:"Veterans",type:"Recruitment Pipeline",level:"Non-Profit / Federal Partner",agency:"Center for Military Recruitment / DOL Partner",act:"DOL-supported",maxBenefit:null,benefitUnit:"Zero-cost pre-screened veteran apprenticeship candidates",eligibility:"Employers with DOL-registered apprenticeship programs in trades",howToApply:"Register at helmetstohardhats.org; post apprenticeship slots; access veteran candidate database",notes:"Direct pipeline from military service to trades apprenticeship. Sila brands that register apprenticeship programs can post slots and receive pre-screened veteran candidates. Navy/Air Force mechanical backgrounds translate directly to HVAC and electrical work.",tags:["Helmets to Hardhats","veteran","trades","military","pipeline","recruitment"]},
-  // EDUCATION
-  {id:40,name:"Federal Pell Grant — CTE & Short-Term Workforce Programs",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Education",type:"Student Grant",level:"Federal",agency:"Dept. of Education / FAFSA",act:"Higher Education Act; FAFSA Simplification Act 2023 (short-term Pell extension)",maxBenefit:7395,benefitUnit:"per student per year (2025-26 award year)",eligibility:"Students with demonstrated financial need enrolled in eligible CTE programs. Recent expansion: Pell now available for programs as short as 8 weeks. Community college HVAC/plumbing/electrical programs qualify.",howToApply:"Partner with local community college for RTI delivery. Students apply at studentaid.gov (FAFSA). Under Trump EO, Pell expansion for CTE/trades is an explicit lever for reaching 1 million apprentices.",notes:"Strategic: partner with a local community college to deliver apprenticeship RTI. Apprentices then apply for Pell Grants that pay their tuition — both employer and employee benefit. Pell + community college = near-zero cost apprenticeship RTI infrastructure.",tags:["Pell Grant","CTE","community college","RTI","tuition","financial aid"]},
-  {id:41,name:"Carl D. Perkins CTE Act — Employer Partnership",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Education",type:"Grant (via Institution Partnership)",level:"Federal",agency:"Dept. of Education / State CTE Agencies",act:"Carl D. Perkins Career and Technical Education Act (reauthorized 2018)",maxBenefit:null,benefitUnit:"Equipment, curriculum, instructor costs covered by institution",eligibility:"Employers partnering with secondary or postsecondary CTE programs. HVAC, Plumbing, Electrical are explicitly listed priority CTE occupations.",howToApply:"Contact local community/technical college CTE director; propose employer advisory partnership or articulation agreement",notes:"Perkins funds can pay for HVAC training equipment at a community college that Sila apprentices use — effectively giving Sila training infrastructure without capital investment. Funds curriculum development and instructor salaries. Essential for sustainable RTI.",tags:["Perkins","CTE","community college","equipment","curriculum","partnership"]},
-  {id:42,name:"Trade Adjustment Assistance (TAA) — Displaced Worker Pipeline",states:["ALL"],trades:["ALL"],category:"Education",type:"Training Grant (Worker-Directed)",level:"Federal",agency:"DOL ETA",act:"Trade Adjustment Assistance Reauthorization Act",maxBenefit:null,benefitUnit:"100% of approved training costs + weekly income support for 2 years",eligibility:"Workers displaced due to trade-related job loss. HVAC, Plumbing, and Electrical are approved retraining occupations in most states.",howToApply:"Displaced workers petition through state workforce agency; employer can flag TAA-eligible candidates during recruiting",notes:"TAA participants have 100% training costs covered PLUS weekly Trade Readjustment Allowances (income replacement). A worker displaced from manufacturing retraining into HVAC via Sila apprenticeship = zero cost to employer, zero cost to worker.",tags:["TAA","displaced workers","manufacturing","pipeline","retraining","100% coverage"]},
-  // TRADES-SPECIFIC
-  {id:20,name:"NCCER Craft Training Credentials",states:["ALL"],trades:["HVAC","Plumbing","Electrical"],category:"Trades",type:"Certification + Grant Access",level:"Industry",agency:"NCCER (National Center for Construction Education and Research)",act:"DOL Office of Apprenticeship partner",maxBenefit:null,benefitUnit:"Nationally portable credentials; accelerated DOL apprenticeship registration",eligibility:"Any employer sponsoring NCCER-accredited training. HVAC, Plumbing, Electrical modules all available.",howToApply:"Become a Sponsoring Organization at nccer.org; access curriculum and assessments",notes:"NCCER credentials are the gold standard for trade skills verification. Using NCCER as apprenticeship curriculum foundation makes federal registration faster, qualifies for Pell-eligible community college programs, and creates portable credentials valuable to technicians. Sila University could become NCCER-accredited.",tags:["NCCER","credential","trades","curriculum","portable","Sila University"]},
-  {id:21,name:"PHCC Educational Foundation — Plumbing & HVAC Scholarships",states:["ALL"],trades:["Plumbing","HVAC"],category:"Trades",type:"Scholarship / Grant",level:"Industry / Private",agency:"PHCC Educational Foundation",act:"Industry Foundation",maxBenefit:5000,benefitUnit:"per student per year",eligibility:"Students in plumbing/HVAC programs; employer sponsorship prioritized",howToApply:"Apply at phccfoundation.org; employer-sponsored candidates prioritized; apply by March annually",notes:"Directly relevant to Sila's core trades. Employer-sponsored candidates get priority. Can fund apprentices' RTI costs, reducing employer's out-of-pocket for the apprenticeship program.",tags:["PHCC","plumbing","HVAC","scholarship","RTI","apprenticeship"]},
-  {id:22,name:"DOD SkillBridge / Home Builders Institute (HBI) Pipeline",states:["ALL"],trades:["HVAC","Plumbing","Electrical"],category:"Trades",type:"Training Partnership + Pipeline",level:"Federal / Private",agency:"Home Builders Institute",act:"DOL + HUD-supported",maxBenefit:null,benefitUnit:"Pre-trained candidates, zero training cost to employer",eligibility:"At-risk youth, veterans, justice-involved individuals entering trades. Employers partner to hire graduates.",howToApply:"Partner with HBI at hbi.org; commit to interview/hire pipeline graduates; no cost to employer",notes:"HBI runs pre-apprenticeship programs in trades across multiple states. Partnering creates a zero-cost pipeline of HVAC/plumbing/electrical candidates pre-trained to basic proficiency. Many HBI graduates also qualify for WOTC (target group workers).",tags:["HBI","pipeline","pre-apprenticeship","at-risk","trades","zero cost"]},
-  {id:23,name:"WANTO — Women in Apprenticeship & Nontraditional Occupations",states:["ALL"],trades:["HVAC","Plumbing","Electrical"],category:"Trades",type:"Grant (via Community Partner)",level:"Federal",agency:"DOL Women's Bureau",act:"WANTO Act",maxBenefit:500000,benefitUnit:"per community org (employer partners receive supported candidates)",eligibility:"Employers committing to host women apprentices; community organizations do the recruiting and support",howToApply:"Partner with a WANTO grantee organization in your state; DOL lists current grantees at dol.gov/agencies/wb",notes:"Expands the trades talent pool. WANTO partners do the recruiting and support work; Sila brands provide apprenticeship slots. Positive workforce diversity impact with minimal administrative burden on the employer.",tags:["women","diversity","WANTO","apprenticeship","pipeline","nontraditional"]},
+  {id:100,name:"Registered Apprenticeship — EO Priority (Fast-Track)",states:["ALL"],trades:["ALL"],category:"Presidential",type:"Grant + Expedited Access",level:"Federal",agency:"DOL Office of Apprenticeship",act:"Exec. Order 'Preparing Americans for High-Paying Skilled Trade Jobs' (Apr 23, 2025)",maxBenefit:7000,benefitUnit:"per apprentice (combined credits)",calcMax:7000,valueBasis:"per apprentice",url:"https://www.apprenticeship.gov/employers/registered-apprenticeship-program",urlLabel:"Register at apprenticeship.gov",eligibility:"All employers. HVAC, Plumbing, and Electrical are explicit EO priority sectors. Processing times reduced under EO directive.",howToApply:"Register at apprenticeship.gov — streamlined under EO mandate. Partner with your local American Job Center to fast-track. File for state credit simultaneously.",notes:"🔥 HIGHEST PRIORITY ACTION: The Trump EO explicitly targets HVAC, Plumbing, and Electrical. Registering NOW positions Sila brands to capture expanded federal grants, IRA bonus credits, and any new congressional tax incentives.",tags:["presidential","EO","apprenticeship","trades","priority"]},
+  {id:1,name:"Work Opportunity Tax Credit (WOTC)",states:["ALL"],trades:["ALL"],category:"Federal-Tax",type:"Tax Credit",level:"Federal",agency:"IRS / Department of Labor",act:"Consolidated Appropriations Act (extended through 2025)",maxBenefit:9600,benefitUnit:"per hire",calcMax:9600,valueBasis:"per hire",url:"https://www.dol.gov/agencies/eta/wotc",urlLabel:"Start at dol.gov/wotc",eligibility:"Employers hiring from 10 target groups: veterans, SNAP recipients, ex-felons, vocational rehab referrals, long-term unemployed (27+ weeks), TANF recipients, and others.",howToApply:"File IRS Form 8850 within 28 DAYS of employee start date. Submit to State Workforce Agency. Missing this deadline forfeits the credit permanently.",notes:"40% of first $6,000 wages for most categories. Up to $9,600 for veterans. Stack with OJT reimbursement. File Form 8850 immediately — do not wait.",tags:["WOTC","tax credit","hiring","veteran","SNAP"]},
+  {id:2,name:"§127 Educational Assistance Plan",states:["ALL"],trades:["ALL"],category:"Federal-Tax",type:"Tax Exclusion",level:"Federal",agency:"IRS",act:"Internal Revenue Code Section 127",maxBenefit:5250,benefitUnit:"per employee/year tax-free",calcMax:5250,valueBasis:"per employee/yr",url:"https://www.irs.gov/publications/p15-b",urlLabel:"IRS Publication 15-B Guide",eligibility:"All employers with a written qualified educational assistance plan. Covers tuition, fees, books for any course.",howToApply:"Establish a written §127 plan document with your employment attorney or HR provider (one-time setup, ~$1-2K). Benefits immediately deductible to employer, tax-free to employee.",notes:"Double benefit: employer deducts 100% AND employee pays zero income/FICA tax. Covers NATE, EPA 608, community college HVAC/plumbing programs, ServiceTitan training.",tags:["§127","education","tuition","certification","NATE","EPA 608"]},
+  {id:3,name:"IRA Clean Energy Apprenticeship Bonus Credits",states:["ALL"],trades:["HVAC","Electrical"],category:"Federal-Tax",type:"Tax Incentive Bonus",level:"Federal",agency:"IRS / DOE",act:"Inflation Reduction Act §§48C, 45V, 48E",maxBenefit:null,benefitUnit:"10% bonus on applicable clean energy credits",calcMax:5000,valueBasis:"estimated bonus value",url:"https://www.energy.gov/eere/workforce-development",urlLabel:"DOE Workforce Development",eligibility:"HVAC and electrical employers installing heat pumps, mini-splits, EV chargers. Requires prevailing wage + registered apprenticeship compliance.",howToApply:"Ensure DOL-registered apprenticeship is in place BEFORE work commences. Maintain prevailing wage records. Claim bonus on applicable IRS forms at year-end.",notes:"Dave's World (ME, 130 employees, heat pump specialist) is ideally positioned. Bonus is a % of underlying credit — significant on large commercial projects.",tags:["IRA","heat pump","HVAC","clean energy","Dave's World","bonus"]},
+  {id:4,name:"R&E Credit — Training Technology & Curriculum",states:["ALL"],trades:["Technology"],category:"Federal-Tax",type:"Tax Credit",level:"Federal",agency:"IRS",act:"IRC §41",maxBenefit:null,benefitUnit:"20% of qualified research wages above base",calcMax:8000,valueBasis:"estimated annual value",url:"https://www.irs.gov/businesses/credits-deductions-for-businesses",urlLabel:"IRS Business Credits Guide",eligibility:"Employers developing new training methodologies, proprietary curricula, LMS platforms, or diagnostic assessment systems.",howToApply:"File IRS Form 6765; document qualified research activities and related wages. Work with a tax advisor who specializes in R&E credits.",notes:"Sila University curriculum development, ServiceTitan training programs, and novel diagnostic training approaches can all qualify. Often overlooked — work with a specialist.",tags:["R&D","curriculum","Sila University","LMS","technology"]},
+  {id:10,name:"On-the-Job Training (OJT) — WIOA Title I",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Federal-Wage",type:"Wage Reimbursement",level:"Federal",agency:"DOL / Local Workforce Development Boards",act:"Workforce Innovation and Opportunity Act (WIOA) 2014",maxBenefit:75,benefitUnit:"% of wages reimbursed during training",calcMax:6600,valueBasis:"per hire (typical 8 wks)",url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx?secondaryNavPanels=BA%3D%3D",urlLabel:"Find Your Local WDB at CareerOneStop",eligibility:"Employers hiring WIOA-eligible workers: dislocated workers, low-income adults, youth 14-24. Employer must commit to permanent placement.",howToApply:"Contact local American Job Center BEFORE hiring. Execute OJT agreement FIRST, then hire. Retroactive claims are NOT permitted.",notes:"50-75% of trade wages reimbursed during training. A new HVAC technician at $22/hr for 8 weeks = ~$3,520 reimbursed at 50%. Stackable with WOTC.",tags:["OJT","wage reimbursement","WIOA","new hire","trades","WDB"]},
+  {id:11,name:"Incumbent Worker Training (IWT) — WIOA",states:["ALL"],trades:["ALL"],category:"Federal-Wage",type:"Grant",level:"Federal / State",agency:"State Workforce Agencies / WDBs",act:"Workforce Innovation and Opportunity Act (WIOA)",maxBenefit:50,benefitUnit:"% of training costs for existing employees",calcMax:2500,valueBasis:"per employee (typical)",url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx?secondaryNavPanels=BA%3D%3D",urlLabel:"Find Your Local WDB at CareerOneStop",eligibility:"Existing employees being upskilled. No income limit. Employer match required (10-50% based on size).",howToApply:"Apply through local Workforce Development Board with training plan and cost breakdown before training begins.",notes:"Covers NATE certifications, EPA 608, OSHA 10/30, ServiceTitan, advanced trade skills. Ask WDB about multi-employer IWT grants — multiple Sila brands can apply jointly.",tags:["incumbent","upskill","current employees","NATE","EPA 608","OSHA"]},
+  {id:12,name:"Federal Bonding Program",states:["ALL"],trades:["ALL"],category:"Federal-Grant",type:"Benefit-in-Kind",level:"Federal",agency:"DOL ETA",act:"WIOA",maxBenefit:25000,benefitUnit:"free fidelity bond per at-risk hire",calcMax:25000,valueBasis:"lump sum coverage",url:"https://bonds4jobs.com",urlLabel:"Apply at bonds4jobs.com",eligibility:"Employers hiring at-risk individuals: ex-offenders, recovering addicts, homeless individuals, economically disadvantaged youth.",howToApply:"Contact State Bonding Coordinator via your American Job Center. Free, minimal paperwork. Bond active immediately.",notes:"Removes a significant barrier to trades hiring. Ex-offenders are strong apprenticeship candidates — this program eliminates employer bond risk at zero cost.",tags:["bonding","reentry","ex-offender","at-risk","hiring"]},
+  {id:20,name:"NCCER Craft Training Credentials",states:["ALL"],trades:["HVAC","Plumbing","Electrical"],category:"Trades",type:"Certification + Grant Access",level:"Industry",agency:"NCCER (National Center for Construction Education)",act:"DOL Office of Apprenticeship partner",maxBenefit:null,benefitUnit:"Portable national credentials + faster DOL registration",calcMax:3000,valueBasis:"training cost savings",url:"https://www.nccer.org/about/become-a-sponsor",urlLabel:"Become an NCCER Sponsor",eligibility:"Any employer sponsoring NCCER-accredited training. HVAC, Plumbing, Electrical modules all available.",howToApply:"Register as a Sponsoring Organization at nccer.org; access curriculum, testing, and credentials.",notes:"NCCER credentials are the gold standard for trade skills. Using NCCER as apprenticeship curriculum foundation makes federal registration faster and qualifies programs for Pell Grant eligibility at community college partners.",tags:["NCCER","credential","trades","curriculum","portable"]},
+  {id:21,name:"PHCC Educational Foundation Scholarships",states:["ALL"],trades:["Plumbing","HVAC"],category:"Trades",type:"Scholarship / Grant",level:"Industry / Private",agency:"PHCC Educational Foundation",act:"Industry Foundation",maxBenefit:5000,benefitUnit:"per student per year",calcMax:5000,valueBasis:"per student/yr",url:"https://www.phccfoundation.org/scholarships/employer-sponsor-scholarship/",urlLabel:"Apply at phccfoundation.org",eligibility:"Students in plumbing/HVAC programs; employer sponsorship prioritized. Apply by March annually.",howToApply:"Apply at phccfoundation.org; employer-sponsored candidates receive priority consideration.",notes:"Can fund apprentices' Related Technical Instruction (RTI) costs, reducing employer's out-of-pocket apprenticeship expenses.",tags:["PHCC","plumbing","HVAC","scholarship","RTI"]},
+  {id:22,name:"Home Builders Institute (HBI) Pre-Apprenticeship Pipeline",states:["ALL"],trades:["HVAC","Plumbing","Electrical"],category:"Trades",type:"Training Partnership",level:"Federal / Private",agency:"Home Builders Institute",act:"DOL + HUD-supported",maxBenefit:null,benefitUnit:"Pre-trained candidates, zero training cost to employer",calcMax:5000,valueBasis:"recruitment cost savings",url:"https://www.hbi.org/employers/",urlLabel:"Partner with HBI",eligibility:"At-risk youth, veterans, justice-involved individuals entering trades. Employers partner to hire graduates.",howToApply:"Partner with HBI at hbi.org; commit to interview/hire pipeline graduates; no cost to employer.",notes:"HBI runs pre-apprenticeship programs in trades. Partnering creates a zero-cost pipeline of candidates pre-trained to basic proficiency. Many graduates also qualify for WOTC.",tags:["HBI","pipeline","pre-apprenticeship","at-risk","trades"]},
+  {id:23,name:"WANTO — Women in Apprenticeship & Nontraditional Occupations",states:["ALL"],trades:["HVAC","Plumbing","Electrical"],category:"Trades",type:"Grant (via Community Partner)",level:"Federal",agency:"DOL Women's Bureau",act:"WANTO Act",maxBenefit:null,benefitUnit:"Pre-screened female candidates for apprenticeship slots",calcMax:0,valueBasis:"pipeline only",url:"https://www.dol.gov/agencies/wb/grants/wanto",urlLabel:"DOL Women's Bureau Grants",eligibility:"Employers committing to host women apprentices. Community orgs do the recruiting; employers provide the slots.",howToApply:"Partner with a current WANTO grantee in your state. DOL lists active grantees at dol.gov/agencies/wb.",notes:"WANTO partners do the recruiting and support work. Sila brands provide apprenticeship slots. Expands the talent pool with minimal employer administrative burden.",tags:["women","diversity","WANTO","apprenticeship","pipeline"]},
+  {id:30,name:"Post-9/11 GI Bill (Ch. 33) — OJT & Apprenticeship",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Veterans",type:"Education Benefit",level:"Federal",agency:"VA / Department of Veterans Affairs",act:"Post-9/11 Veterans Educational Assistance Act (Chapter 33)",maxBenefit:2717,benefitUnit:"monthly housing allowance paid by VA to veteran",calcMax:32604,valueBasis:"per veteran/yr (12 mos × $2,717)",url:"https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/",urlLabel:"VA OJT & Apprenticeship Guide",eligibility:"Veterans with 90+ days active service after 9/10/2001. Employer must have VA-approved OJT/apprenticeship program.",howToApply:"Employer: VA-approve your apprenticeship at va.gov/education. Veteran: apply for benefits at va.gov. Both steps required — takes 4-6 weeks.",notes:"VA pays the veteran $1,800-$2,717/month DIRECTLY, plus $83/month stipend — on top of their Sila wage. Employer pays NOTHING extra. The most powerful veteran recruiting tool in trades.",tags:["GI Bill","Post-9/11","veteran","Chapter 33","housing allowance","apprenticeship"]},
+  {id:31,name:"VA Vocational Rehabilitation & Employment (Ch. 31)",states:["ALL"],trades:["ALL"],category:"Veterans",type:"Education Benefit",level:"Federal",agency:"VA / VR&E Service",act:"Vocational Rehabilitation and Employment (Chapter 31)",maxBenefit:null,benefitUnit:"Full training costs + monthly subsistence for disabled veteran",calcMax:15000,valueBasis:"per disabled veteran (est.)",url:"https://www.va.gov/careers-employment/vocational-rehabilitation/",urlLabel:"VA VR&E Program",eligibility:"Veterans with service-connected disability rating of 20%+. Employer offers OJT/apprenticeship.",howToApply:"Work with VA VR&E counselors to develop OJT plans; employer submits job description and training outline.",notes:"VA pays ALL training costs AND monthly subsistence allowance to the veteran. Zero cost to employer. Helmets to Hardhats is a referral source.",tags:["disability","veteran","VR&E","Chapter 31","subsistence","free training"]},
+  {id:32,name:"DOD SkillBridge — Active Duty to Trades",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Veterans",type:"Free Labor Pipeline",level:"Federal",agency:"Department of Defense",act:"National Defense Authorization Act (NDAA)",maxBenefit:null,benefitUnit:"DOD pays full military salary — employer cost $0 for 4-6 months",calcMax:42000,valueBasis:"per person (estimated 6-mo salary)",url:"https://skillbridge.defense.gov/Employers/Enrollment-Process.htm",urlLabel:"Register at skillbridge.defense.gov",eligibility:"Active duty service members within 180 days of separation. Employer provides 4-6 month apprenticeship/internship.",howToApply:"Register as SkillBridge employer partner at skillbridge.defense.gov. Post opportunities; receive pre-screened candidates within 30-60 days.",notes:"DOD pays their full military salary for 4-6 months while they apprentice at Sila — employer labor cost is ZERO. Motivated, disciplined, technically trained candidates. Many convert to full-time hires.",tags:["SkillBridge","active duty","free labor","military","transition","zero cost"]},
+  {id:33,name:"Helmets to Hardhats",states:["ALL"],trades:["HVAC","Plumbing","Electrical"],category:"Veterans",type:"Recruitment Pipeline",level:"Non-Profit / Federal Partner",agency:"Center for Military Recruitment / DOL Partner",act:"DOL-supported",maxBenefit:null,benefitUnit:"Zero-cost pre-screened veteran apprenticeship candidates",calcMax:2000,valueBasis:"recruitment cost savings",url:"https://helmetstohardhats.org/employers/",urlLabel:"Register at helmetstohardhats.org",eligibility:"Employers with DOL-registered apprenticeship programs in trades.",howToApply:"Register at helmetstohardhats.org; post apprenticeship slots; access veteran candidate database.",notes:"Direct pipeline from military service to trades apprenticeship. Pre-screened veteran candidates with transferable mechanical skills from Navy/Air Force service.",tags:["Helmets to Hardhats","veteran","trades","military","pipeline"]},
+  {id:40,name:"Federal Pell Grant — CTE & Short-Term Workforce Programs",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Education",type:"Student Grant",level:"Federal",agency:"Dept. of Education / FAFSA",act:"Higher Education Act; FAFSA Simplification Act 2023",maxBenefit:7395,benefitUnit:"per student per year",calcMax:7395,valueBasis:"per student/yr",url:"https://studentaid.gov/understand-aid/types/grants/pell",urlLabel:"FAFSA at studentaid.gov",eligibility:"Students with financial need in eligible CTE programs. Now available for programs as short as 8 weeks. HVAC/Plumbing/Electrical programs at community colleges qualify.",howToApply:"Partner with local community college for RTI delivery. Students apply via FAFSA at studentaid.gov. College handles Pell administration.",notes:"Strategic: partner with a community college to deliver apprenticeship RTI. Apprentices then apply for Pell Grants that pay their tuition — both employer and employee benefit.",tags:["Pell Grant","CTE","community college","RTI","tuition"]},
+  {id:41,name:"Carl D. Perkins CTE Act — Employer Partnership",states:["ALL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"Education",type:"Grant (via Institution Partnership)",level:"Federal",agency:"Dept. of Education / State CTE Agencies",act:"Carl D. Perkins Career and Technical Education Act (reauthorized 2018)",maxBenefit:null,benefitUnit:"Equipment, curriculum, instructor costs covered by institution",calcMax:8000,valueBasis:"estimated shared value",url:"https://cte.ed.gov/legislation/perkins-v",urlLabel:"Perkins V at cte.ed.gov",eligibility:"Employers partnering with secondary or postsecondary CTE programs. HVAC, Plumbing, Electrical are priority CTE occupations.",howToApply:"Contact local community/technical college CTE director; propose employer advisory partnership or articulation agreement.",notes:"Perkins funds can pay for HVAC training equipment at a community college that Sila apprentices use — training infrastructure without capital investment.",tags:["Perkins","CTE","community college","equipment","curriculum","partnership"]},
+  {id:42,name:"Trade Adjustment Assistance (TAA) — Displaced Worker Pipeline",states:["ALL"],trades:["ALL"],category:"Education",type:"Training Grant (Worker-Directed)",level:"Federal",agency:"DOL ETA",act:"Trade Adjustment Assistance Reauthorization Act",maxBenefit:null,benefitUnit:"100% training costs + weekly income support (2 yr max)",calcMax:20000,valueBasis:"per displaced worker",url:"https://www.dol.gov/agencies/eta/tradeact",urlLabel:"DOL Trade Adjustment Assistance",eligibility:"Workers displaced due to trade-related job loss. HVAC, Plumbing, Electrical are approved retraining occupations in most states.",howToApply:"Displaced workers petition through state workforce agency. Employer can flag TAA-eligible candidates during recruiting.",notes:"TAA participants have 100% training costs covered PLUS weekly Trade Readjustment Allowances. A displaced manufacturing worker retraining into HVAC = zero cost to employer or worker.",tags:["TAA","displaced workers","manufacturing","pipeline","retraining"]},
   // STATE PROGRAMS
-  {id:200,name:"Apprenticeship Connecticut Initiative",states:["CT"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant + Technical Assistance",level:"State",agency:"CT Dept. of Labor",act:"CT Public Act 14-175",maxBenefit:3000,benefitUnit:"per apprentice (training cost reimbursement)",eligibility:"CT employers with DOL-registered apprenticeship programs in all industries",howToApply:"portal.ct.gov/dol — contact CT DOL Apprenticeship Division; apply before DOL registration is complete for state layering",notes:"HVAC, Plumbing, and Electrical are listed CT priority occupations. Stack with federal OJT and WOTC for Astacio (Norwalk, 105 emp), Absolute Air (Portland/Essex), and Glasco (South Windsor, 39 emp).",tags:["Connecticut","CT","apprenticeship","state","Astacio","Glasco","Absolute Air"]},
-  {id:210,name:"Delaware Works Customized Training Grant",states:["DE"],trades:["HVAC","ALL"],category:"State",type:"Grant",level:"State",agency:"Delaware DOL / Delaware Technical Community College",act:"Delaware Workforce Development Act",maxBenefit:50000,benefitUnit:"per employer project",eligibility:"DE employers creating or upgrading jobs; training must be customized to employer-specific needs",howToApply:"Delaware Works offices statewide; frequently delivered through Del Tech community college system",notes:"Burns & McBride (New Castle, DE, 37 employees) is the Sila brand here. Del Tech has existing HVAC programs — leverage Perkins + Delaware Works together for a subsidized apprenticeship program.",tags:["Delaware","DE","customized training","Burns McBride","New Castle"]},
-  {id:220,name:"Illinois Works Apprenticeship Initiative",states:["IL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Tax Credit",level:"State",agency:"IL DCEO",act:"Illinois Works Act (2022)",maxBenefit:2500,benefitUnit:"per apprentice per year (tax credit)",eligibility:"IL employers with DOL-registered apprenticeship programs",howToApply:"dceo.illinois.gov/illinoisworks; register apprenticeship with DOL first, then apply for state credit",notes:"AA Service Co. (Chicago, 120+ employees) is a strong candidate. IL also offers DCEO Employer Training Investment Program (ETIP) grants up to $50,000. Combine IL Works + ETIP + federal WOTC for AA Service.",tags:["Illinois","IL","Chicago","apprenticeship","AA Service"]},
-  {id:221,name:"IL DCEO Employer Training Investment Program (ETIP)",states:["IL"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"Illinois DCEO",act:"Illinois Economic Development Act",maxBenefit:50000,benefitUnit:"per employer project",eligibility:"IL employers training workers in in-demand occupations; small employers prioritized",howToApply:"dceo.illinois.gov/workforce; requires training plan submitted before training begins",notes:"Covers new hire and incumbent worker training. AA Service Co. with 120+ employees could receive up to $50,000 for a structured training program.",tags:["Illinois","IL","ETIP","training grant","AA Service","Chicago"]},
-  {id:230,name:"Efficiency Maine — Contractor Training Fund",states:["ME"],trades:["HVAC"],category:"State",type:"Grant",level:"State",agency:"Efficiency Maine Trust",act:"Maine Clean Energy Jobs Act",maxBenefit:2500,benefitUnit:"per technician trained in qualifying clean energy installs",eligibility:"Maine HVAC contractors installing qualifying heat pump, heat pump water heater, or weatherization systems",howToApply:"efficiencymaine.com; contractor registration required; training subsidies apply to workforce training for clean energy installations",notes:"DIRECTLY RELEVANT to Dave's World (130 employees, Maine, specializes in heat pumps). Efficiency Maine actively funds heat pump installer training — Dave's World technicians are the exact target workforce. Also pairs with IRA clean energy apprenticeship bonus credits.",tags:["Maine","ME","heat pump","HVAC","Efficiency Maine","Dave's World","clean energy"]},
-  {id:231,name:"Maine Apprenticeship Program (MAP)",states:["ME"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant",level:"State",agency:"Maine Dept. of Labor",act:"Maine Apprenticeship Program",maxBenefit:2000,benefitUnit:"per apprentice (RTI cost reimbursement)",eligibility:"ME employers with registered or pre-registered apprenticeship programs",howToApply:"maine.gov/labor/apprenticeship; Maine has a dedicated apprenticeship specialist",notes:"Dave's World (130 employees, 7 locations) should lead MAP registration. Maine prioritizes heat pump technician development as a state energy goal. MAP + Efficiency Maine + federal IRA credits = strong stack for Dave's World.",tags:["Maine","ME","apprenticeship","MAP","Dave's World","heat pump"]},
-  {id:240,name:"EARN Maryland — Strategic Industry Partnerships",states:["MD"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant",level:"State",agency:"Maryland Dept. of Labor / EARN Maryland",act:"EARN Maryland Act",maxBenefit:500000,benefitUnit:"per industry partnership project",eligibility:"Multi-employer industry partnerships in strategic sectors; HVAC/plumbing/mechanical trades eligible",howToApply:"labor.maryland.gov/earn; apply as employer-led sector partnership; MD assigns a workforce development advisor",notes:"Sila Heating & Air (Beltsville) + My Plumber Plus (serves MD suburbs) can anchor an EARN Maryland application. Large grants available for multi-employer training consortia.",tags:["Maryland","MD","EARN","sector partnership","Beltsville","Sila MD"]},
-  {id:250,name:"MA Workforce Training Fund Program (WTFP)",states:["MA"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"MA Dept. of Unemployment Assistance / Commonwealth Corporation",act:"Massachusetts Workforce Training Fund",maxBenefit:250000,benefitUnit:"per employer project",eligibility:"MA employers paying into the workforce training fund (via DUA contributions). No industry restriction. New hire and incumbent worker training.",howToApply:"workforcetrainingfund.org; apply before training begins; preference for multi-year plans",notes:"One of the most generous state training grant programs nationally. All MA Sila brands: Boston Standard, Central Cooling, N.E.T.R., Nashoba Air, Sila Stoneham, TriState (combined 300+ MA employees). A coordinated MA-wide Sila training program could maximize the full $250,000.",tags:["Massachusetts","MA","WTFP","training fund","Boston Standard","NETR","Nashoba","Central Cooling"]},
-  {id:251,name:"MassHire HireNow Workforce Grant",states:["MA"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"MA Executive Office of Labor & Workforce Development",act:"Massachusetts Workforce Development Budget Provisions",maxBenefit:10000,benefitUnit:"per new hire (training reimbursement)",eligibility:"MA employers with job openings in high-demand occupations; HVAC and plumbing explicitly listed as priority occupations",howToApply:"masshirehcd.com; contact local MassHire Career Center; apply within 30 days of hire",notes:"$4,000-$10,000 per new hire specifically to support training. Stackable with WTFP. HVAC and plumbing are on the MA priority occupation list. Apply for EACH new technician hire.",tags:["Massachusetts","MA","HireNow","new hire","HVAC","priority occupation"]},
-  {id:260,name:"Going PRO Talent Fund — Michigan",states:["MI"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"Michigan Dept. of Labor & Economic Opportunity (LEO)",act:"Michigan Going PRO Talent Fund",maxBenefit:900000,benefitUnit:"per employer project",eligibility:"Michigan employers providing employer-sponsored, occupationally specific training leading to a credential or industry-recognized certification",howToApply:"michigan.gov/leo; applications open in spring; delivered through Michigan Works! agencies",notes:"⭐ ONE OF THE MOST VALUABLE STATE PROGRAMS IN ANY SILA STATE. Up to $900,000 per project. Carter's Plumbing (SE Michigan, 42 emp) and Levine & Sons (Southfield, 58+ emp) should BOTH apply. Going PRO has funded HVAC, Plumbing, and Electrical trade training at multiple Michigan employers. Highly competitive but awards are large.",tags:["Michigan","MI","Going PRO","Carter's Plumbing","Levine Sons","trades","large grant"]},
-  {id:261,name:"Michigan Apprenticeship Program Plus (MAP+)",states:["MI"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Wage Subsidy",level:"State",agency:"Michigan LEO / Michigan Works!",act:"Michigan Going PRO expansion",maxBenefit:3000,benefitUnit:"per apprentice wage subsidy",eligibility:"MI employers with registered apprenticeship programs",howToApply:"Apply through Michigan Works! agencies after DOL apprenticeship registration",notes:"Supplements Going PRO for registered apprenticeships. Wage subsidy during apprenticeship + training cost reimbursement. Stack with federal OJT and WOTC for MI brands.",tags:["Michigan","MI","apprenticeship","MAP+","wage subsidy"]},
-  {id:270,name:"NH Job Training Fund",states:["NH"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"NH Dept. of Business and Economic Affairs",act:"NH RSA 188-F Job Training Fund",maxBenefit:100000,benefitUnit:"per employer project",eligibility:"NH businesses training workers; all industries",howToApply:"nheconomy.com; apply through NH Job Training Fund coordinator",notes:"Live Free Heating Cooling Electric (Concord) and TCC (Concord) are both NH Sila brands. A joint NH application from both brands could maximize the award. Vermont Technical College is also a good delivery partner for cross-border training.",tags:["New Hampshire","NH","training fund","Live Free","TCC","Concord"]},
-  {id:280,name:"NJ Chapter 12 Employer Apprenticeship Credit",states:["NJ"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Tax Credit",level:"State",agency:"NJ Dept. of Labor / NJ Division of Taxation",act:"NJ Apprenticeship Law (NJSA 34:15A)",maxBenefit:5000,benefitUnit:"per apprentice per year",eligibility:"NJ employers with state-registered apprenticeship programs",howToApply:"Register apprenticeship with NJ DOL first; apply for Chapter 12 credit with NJ Division of Taxation on corporate tax return",notes:"Allied Experts (Cherry Hill, NJ, 85 employees serving most of NJ) is a strong candidate. NJ's $5,000/apprentice credit is among the highest state credits nationally. Stack with federal WOTC and OJT for Allied.",tags:["New Jersey","NJ","apprenticeship","tax credit","Allied Experts","Cherry Hill"]},
-  {id:281,name:"NJ Incumbent Worker Training Program",states:["NJ"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"NJ Dept. of Labor",act:"NJ Workforce Development Partnership Act",maxBenefit:50000,benefitUnit:"per employer",eligibility:"NJ employers training existing workers in in-demand skills",howToApply:"njworkforce.gov; apply through NJ One-Stop Career Center",notes:"NATE certifications, EPA 608, diagnostic training, ServiceTitan — all qualify. Allied Experts' 85 employees represent a strong incumbent training program application.",tags:["New Jersey","NJ","incumbent","upskill","training","Allied Experts"]},
-  {id:290,name:"Empire State Apprenticeship Tax Credit (NY)",states:["NY"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Tax Credit",level:"State",agency:"NYS Dept. of Labor / NY Empire State Development",act:"NY Tax Law §210-B",maxBenefit:5000,benefitUnit:"per apprentice yr 1 + $1,250-$2,500/yr ongoing",eligibility:"NY employers with DOL-registered apprenticeship programs",howToApply:"Apply through NYS DOL Apprenticeship Training unit; claim on NY CT-601 corporation tax form",notes:"NY Sila brands span Hudson Valley, Southern Tier, and NYC metro. Combined: Astar, Auchinachie, Essential Power, Jones, JSP, Sila White Plains, T-Mark. $5,000/apprentice in year one is among the highest state credits nationally. Coordinate a NY-wide Sila apprenticeship strategy.",tags:["New York","NY","Empire State","apprenticeship","tax credit","Hudson Valley","T-Mark","Buffalo"]},
-  {id:291,name:"NY Consolidated Funding Application (CFA)",states:["NY"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"NY Empire State Development / Regional Councils",act:"NY Regional Economic Development Act",maxBenefit:500000,benefitUnit:"per application (varies by region)",eligibility:"NY employers applying through regional economic development councils",howToApply:"esd.ny.gov/cfa; applications open in summer for fall awards; align with regional economic development priorities",notes:"Multiple NY Sila brands in different regions can each submit CFA applications. Mid-Hudson Valley (Astar, Jones, JSP) and Southern Tier (Auchinachie) should coordinate regional submissions.",tags:["New York","NY","CFA","regional","economic development","workforce"]},
-  {id:300,name:"Ohio TechCred Program",states:["OH"],trades:["HVAC","Plumbing","Electrical","Technology","ALL"],category:"State",type:"Grant",level:"State",agency:"Ohio Dept. of Development",act:"Ohio TechCred Program",maxBenefit:30000,benefitUnit:"$2,000 per credential, $30,000 per employer per round",eligibility:"Ohio employers paying employees to earn tech-focused credentials. HVAC controls, building automation, EPA 608, NATE, and tech credentials qualify.",howToApply:"techcred.ohio.gov; applications open QUARTERLY; one application per round per employer",notes:"⭐ CRITICAL: Apply EVERY QUARTER. With 6 OH brands (A to Z, Ainsley, Best, Bonsky, Coblentz, Jackson Comfort — 250+ combined OH employees), Ohio is a major TechCred opportunity. NATE, EPA 608, building automation, diagnostic tech = $2,000 each. Up to $30,000 per brand per quarter.",tags:["Ohio","OH","TechCred","credential","NATE","EPA 608","automation","quarterly","Jackson Comfort"]},
-  {id:301,name:"Ohio Incumbent Worker Training (IWT)",states:["OH"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"Ohio Dept. of Jobs and Family Services / OhioMeansJobs",act:"Ohio WIOA Implementation",maxBenefit:4000,benefitUnit:"per employee trained",eligibility:"Ohio employers training current workers in skills that prevent layoffs or increase wages",howToApply:"ohiomeansjobs.com; apply through local OhioMeansJobs center",notes:"Stack with TechCred for OH brands. A technician getting both NATE certification (TechCred $2,000) AND broader trade skills training (IWT $4,000) = $6,000 per person in OH grants.",tags:["Ohio","OH","incumbent worker","IWT","OhioMeansJobs","upskill"]},
-  {id:310,name:"WEDnet — Pennsylvania Workforce Development",states:["PA"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"PA DCED / WEDnet",act:"Pennsylvania Workforce Development Act",maxBenefit:null,benefitUnit:"$450-$850 per employee for customized training",eligibility:"PA businesses; customized training delivered by approved providers (typically community colleges)",howToApply:"wednetpa.org; work with a WEDnet provider before training begins",notes:"Available to all PA Sila brands: A-Comfort (Pittsburgh), Adam Home, Delco Storm, ECS Comfort, Gary & Sons, Oxford, Sila KoP, Sullivan (Pittsburgh), Triangle (Bellefonte). Nine PA brands representing hundreds of employees. One of PA's longest-running and most accessible programs.",tags:["Pennsylvania","PA","WEDnet","training","customized","all PA brands"]},
-  {id:311,name:"PA Industry Partnerships Program",states:["PA"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant",level:"State",agency:"PA Dept. of Labor & Industry",act:"PA Workforce Development Act",maxBenefit:200000,benefitUnit:"per industry partnership",eligibility:"Multi-employer industry partnerships in PA; HVAC/Plumbing/Mechanical sector eligible",howToApply:"pa.gov/agencies/dli; work with local WDB to form an industry partnership",notes:"Sila's PA portfolio (9 brands, 250+ PA employees) is a ready-made industry partnership. A Sila-led PA Home Services Industry Partnership could apply for a $200K grant to develop shared training programs across all PA brands.",tags:["Pennsylvania","PA","industry partnership","multi-employer","9 brands","consortium"]},
-  {id:312,name:"PA Apprenticeship Tax Credit",states:["PA"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Tax Credit",level:"State",agency:"PA Dept. of Revenue",act:"Pennsylvania Tax Reform Code §1717-F",maxBenefit:2500,benefitUnit:"per apprentice per year",eligibility:"PA employers with state or federally-registered apprenticeship programs",howToApply:"Apply with PA Department of Revenue on PA corporate tax return; attach certification from PA DOL",notes:"Stack PA Credit ($2,500) + Federal WOTC ($2,400-$9,600) + OJT reimbursement (50-75% wages). For a veteran apprentice at $22/hr over 16 weeks, total offset could exceed $15,000 per hire.",tags:["Pennsylvania","PA","apprenticeship","tax credit","stacking","veteran"]},
-  {id:320,name:"Virginia Talent Accelerator Program (VTAP)",states:["VA"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant / Training Services",level:"State",agency:"Virginia Economic Development Partnership (VEDP) / VCCS",act:"Virginia Workforce Development Act",maxBenefit:null,benefitUnit:"Full cost of customized training (no stated cap for qualifying expansions)",eligibility:"Companies committing to job creation or significant expansion in VA. Services companies with significant new hiring qualify.",howToApply:"yesvirginia.org/vtap; work with VEDP on a workforce development proposal tied to hiring plans",notes:"Guy Smith (VA Beach, 64 emp), John Nugent (Northern VA, 105 emp), My Plumber Plus (Manassas, 150 emp) are VA brands. If any are expanding significantly, VTAP can fund a complete customized training program at no cost.",tags:["Virginia","VA","VTAP","customized","Guy Smith","John Nugent","My Plumber Plus","expansion"]},
-  {id:321,name:"Virginia FastForward — Community College Credentials",states:["VA"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Student Grant",level:"State",agency:"Virginia Community College System (VCCS)",act:"FastForward Program (Virginia Budget Act)",maxBenefit:3000,benefitUnit:"75% of credential program cost covered per student",eligibility:"Virginia residents enrolling in qualifying short-term workforce credentials at VA community colleges. HVAC, Plumbing, Electrical explicitly listed.",howToApply:"va.vccs.edu; employers partner with local VCCS to co-develop aligned programs and recruit graduates",notes:"VA community colleges offer FastForward-funded HVAC, plumbing, and electrical credentials covering 75% of student cost. VA Sila brands partner with local VCCS to recruit graduates and fast-track them into apprenticeships.",tags:["Virginia","VA","FastForward","VCCS","credential","pipeline","HVAC","plumbing"]},
-  {id:330,name:"Vermont Training Program (VTP)",states:["VT"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"Vermont Dept. of Economic Development",act:"Vermont Training Program",maxBenefit:35000,benefitUnit:"per employer project",eligibility:"VT businesses training workers in skills needed for specific jobs; all industries",howToApply:"accd.vermont.gov/economic-development/training; apply before training begins with a training plan",notes:"Green Mountain Plumbing (Woodstock, VT, 10+ employees) can access up to $35,000 for a structured trade training program. Vermont Technical College is a good delivery partner for HVAC/plumbing RTI.",tags:["Vermont","VT","training program","Green Mountain","Woodstock"]},
-  {id:340,name:"Wisconsin Fast Forward",states:["WI"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant",level:"State",agency:"Wisconsin Technical College System / WI DWD",act:"Wisconsin Act 9 and successor appropriations",maxBenefit:400000,benefitUnit:"per employer/technical college project",eligibility:"WI employers partnering with WI Technical College for customized training",howToApply:"dwd.wisconsin.gov/fastforward; partner with MATC for New Berlin brands",notes:"New Berlin Heating & Air (New Berlin, WI, 19 employees) is the WI Sila brand. Wisconsin Fast Forward can fund a customized HVAC training program delivered through MATC at up to $400,000 — transformative investment potential for a smaller brand.",tags:["Wisconsin","WI","Fast Forward","WTCS","MATC","New Berlin","customized"]},
-  // PE/FINANCE
-  {id:400,name:"CDFI Fund — Financial Assistance Awards",states:["ALL"],trades:["Technology"],category:"Federal-Grant",type:"Grant",level:"Federal",agency:"CDFI Fund / U.S. Treasury",act:"Riegle Community Development Banking Act (1994)",maxBenefit:2000000,benefitUnit:"per CDFI applicant per round",eligibility:"Certified CDFIs. Relevant to Sila's Goldman Sachs PE ownership structure and any financial subsidiaries serving underserved communities.",howToApply:"cdfifund.gov; obtain CDFI certification first",notes:"Relevant to Sila's Goldman Sachs PE ownership. Training of staff at a CDFI-certified subsidiary is an eligible use of FA funds.",tags:["CDFI","PE","Goldman Sachs","finance","community development"]},
-  {id:401,name:"New Markets Tax Credit (NMTC)",states:["ALL"],trades:["ALL"],category:"Federal-Tax",type:"Tax Credit",level:"Federal",agency:"CDFI Fund / U.S. Treasury",act:"Community Renewal Tax Relief Act (2000)",maxBenefit:39,benefitUnit:"% tax credit on qualified equity investments over 7 years",eligibility:"Investments in low-income communities via certified CDEs. Training facilities in LICs qualify.",howToApply:"cdfifund.gov; CDE certification required",notes:"Training centers built in low-income communities served by Sila brands qualify for NMTC financing — effectively reducing capital cost of training infrastructure by ~39%.",tags:["NMTC","investment","low-income","training facility","PE"]}
+  {id:200,name:"Apprenticeship Connecticut Initiative",states:["CT"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant + Technical Assistance",level:"State",agency:"CT Dept. of Labor",act:"CT Public Act 14-175",maxBenefit:3000,benefitUnit:"per apprentice (training cost reimbursement)",calcMax:3000,valueBasis:"per apprentice",url:"https://portal.ct.gov/DOL/CTDOL/Apprenticeship-Training",urlLabel:"CT DOL Apprenticeship Division",eligibility:"CT employers with DOL-registered apprenticeship programs.",howToApply:"Contact CT DOL Apprenticeship Division at portal.ct.gov/dol before DOL registration is complete to stack benefits.",notes:"HVAC, Plumbing, and Electrical are listed CT priority occupations. Stack with federal OJT and WOTC for Astacio (Norwalk, 105 emp), Absolute Air, and Glasco.",tags:["Connecticut","CT","apprenticeship","Astacio","Glasco","Absolute Air"]},
+  {id:201,name:"CTNext Innovation Workforce Grants",states:["CT"],trades:["Technology","ALL"],category:"State",type:"Grant",level:"State",agency:"CTNext / Connecticut Innovations",act:"CT Economic Development Act",maxBenefit:100000,benefitUnit:"per project",calcMax:100000,valueBasis:"project grant",url:"https://ctnext.com/workforce-development/",urlLabel:"CTNext Workforce Programs",eligibility:"CT employers in designated innovation zones developing workforce capabilities including technology upskilling.",howToApply:"ctnext.com; application rounds typically open twice annually.",notes:"Relevant for CT Sila brands (Astacio, Absolute Air, Glasco) for technology upskilling — ServiceTitan, diagnostics, field technology.",tags:["Connecticut","CT","technology","innovation","CTNext"]},
+  {id:210,name:"Delaware Works Customized Training Grant",states:["DE"],trades:["HVAC","ALL"],category:"State",type:"Grant",level:"State",agency:"Delaware DOL / Delaware Technical Community College",act:"Delaware Workforce Development Act",maxBenefit:50000,benefitUnit:"per employer project",calcMax:50000,valueBasis:"project grant",url:"https://delawareworks.com/employers/workforce-development",urlLabel:"Delaware Works Employer Portal",eligibility:"DE employers creating or upgrading jobs. Training must be customized to employer-specific needs.",howToApply:"Delaware Works offices statewide. Frequently delivered through Del Tech community college system.",notes:"Burns & McBride (New Castle, DE, 37 employees). Del Tech has existing HVAC programs — leverage Perkins + Delaware Works together for a subsidized apprenticeship program.",tags:["Delaware","DE","customized training","Burns McBride","New Castle"]},
+  {id:220,name:"Illinois Works Apprenticeship Initiative",states:["IL"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Tax Credit",level:"State",agency:"IL DCEO",act:"Illinois Works Act (2022)",maxBenefit:2500,benefitUnit:"per apprentice per year",calcMax:2500,valueBasis:"per apprentice/yr",url:"https://dceo.illinois.gov/workforcedevelopment/illinoisworks.htm",urlLabel:"DCEO Illinois Works",eligibility:"IL employers with DOL-registered apprenticeship programs.",howToApply:"dceo.illinois.gov/illinoisworks; register apprenticeship with DOL first, then apply for state credit.",notes:"AA Service Co. (Chicago, 120+ employees) is a strong candidate. Also eligible for DCEO Employer Training Investment Program (ETIP) grants up to $50,000.",tags:["Illinois","IL","Chicago","apprenticeship","AA Service"]},
+  {id:221,name:"IL DCEO Employer Training Investment Program (ETIP)",states:["IL"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"Illinois DCEO",act:"Illinois Economic Development Act",maxBenefit:50000,benefitUnit:"per employer project",calcMax:50000,valueBasis:"project grant",url:"https://dceo.illinois.gov/workforcedevelopment/etip.htm",urlLabel:"DCEO ETIP Application",eligibility:"IL employers training workers in in-demand occupations. Small employers prioritized.",howToApply:"dceo.illinois.gov/workforce; requires training plan submitted before training begins.",notes:"Covers new hire and incumbent worker training for AA Service Co. (120+ IL employees, Chicago). Pairs well with §127 plan.",tags:["Illinois","IL","ETIP","training grant","AA Service","Chicago"]},
+  {id:230,name:"Efficiency Maine — Contractor Training Fund",states:["ME"],trades:["HVAC"],category:"State",type:"Grant",level:"State",agency:"Efficiency Maine Trust",act:"Maine Clean Energy Jobs Act",maxBenefit:2500,benefitUnit:"per technician trained",calcMax:2500,valueBasis:"per technician",url:"https://www.efficiencymaine.com/contractors/",urlLabel:"Efficiency Maine Contractor Portal",eligibility:"Maine HVAC contractors installing qualifying heat pump, heat pump water heaters, or weatherization systems.",howToApply:"efficiencymaine.com; contractor registration required; training subsidies apply to qualifying clean energy workforce training.",notes:"DIRECTLY RELEVANT to Dave's World (130 employees, Maine, heat pump specialist). Efficiency Maine actively funds heat pump installer training — Dave's World technicians are the exact target workforce.",tags:["Maine","ME","heat pump","HVAC","Efficiency Maine","Dave's World","clean energy"]},
+  {id:231,name:"Maine Apprenticeship Program (MAP)",states:["ME"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant",level:"State",agency:"Maine Dept. of Labor",act:"Maine Apprenticeship Program",maxBenefit:2000,benefitUnit:"per apprentice (RTI cost reimbursement)",calcMax:2000,valueBasis:"per apprentice",url:"https://www.maine.gov/labor/employment_services/apprenticeship/",urlLabel:"Maine DOL Apprenticeship",eligibility:"ME employers with registered or pre-registered apprenticeship programs.",howToApply:"maine.gov/labor/apprenticeship; Maine has a dedicated apprenticeship specialist who assists with registration.",notes:"Dave's World (130 employees, 7 locations) should lead MAP registration. Maine prioritizes heat pump technician development. MAP + Efficiency Maine + IRA credits = strong stack.",tags:["Maine","ME","apprenticeship","MAP","Dave's World","heat pump"]},
+  {id:240,name:"EARN Maryland — Strategic Industry Partnerships",states:["MD"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant",level:"State",agency:"Maryland Dept. of Labor / EARN Maryland",act:"EARN Maryland Act",maxBenefit:500000,benefitUnit:"per industry partnership project",calcMax:500000,valueBasis:"project grant",url:"https://www.dllr.state.md.us/earn/",urlLabel:"EARN Maryland Program",eligibility:"Multi-employer industry partnerships in strategic sectors. HVAC/Plumbing/Mechanical trades eligible.",howToApply:"labor.maryland.gov/earn; apply as employer-led sector partnership; MD assigns a workforce development advisor.",notes:"Sila Heating & Air (Beltsville, MD) + My Plumber Plus (serves MD suburbs) can anchor an EARN Maryland application. Large grants for multi-employer consortia.",tags:["Maryland","MD","EARN","sector partnership","Beltsville","Sila MD"]},
+  {id:250,name:"MA Workforce Training Fund Program (WTFP)",states:["MA"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"MA Dept. of Unemployment Assistance / Commonwealth Corporation",act:"Massachusetts Workforce Training Fund",maxBenefit:250000,benefitUnit:"per employer project",calcMax:250000,valueBasis:"project grant",url:"https://www.workforcetrainingfund.org",urlLabel:"Apply at workforcetrainingfund.org",eligibility:"MA employers paying into the workforce training fund (DUA contributions). No industry restriction. New hire and incumbent worker training.",howToApply:"workforcetrainingfund.org; apply before training begins; preference for multi-year plans.",notes:"One of the most generous state training grants nationally. All MA brands: Boston Standard, Central Cooling, N.E.T.R., Nashoba Air, Sila Stoneham, TriState (300+ MA employees). Coordinate for maximum award.",tags:["Massachusetts","MA","WTFP","training fund","Boston Standard","NETR","Nashoba","Central Cooling"]},
+  {id:251,name:"MassHire HireNow Workforce Grant",states:["MA"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"MA Executive Office of Labor & Workforce Development",act:"Massachusetts Workforce Development Budget",maxBenefit:10000,benefitUnit:"per new hire",calcMax:10000,valueBasis:"per hire",url:"https://www.mass.gov/info-details/masshire-hirenow",urlLabel:"MassHire HireNow Program",eligibility:"MA employers in high-demand occupations. HVAC and plumbing explicitly listed as priority occupations.",howToApply:"masshirehcd.com; contact local MassHire Career Center; apply within 30 days of hire.",notes:"$4,000-$10,000 per new hire for training. HVAC and plumbing are on the MA priority occupation list. Apply for each new technician hire.",tags:["Massachusetts","MA","HireNow","new hire","HVAC","priority occupation"]},
+  {id:260,name:"Going PRO Talent Fund — Michigan",states:["MI"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"Michigan Dept. of Labor & Economic Opportunity (LEO)",act:"Michigan Going PRO Talent Fund",maxBenefit:900000,benefitUnit:"per employer project",calcMax:900000,valueBasis:"project grant",url:"https://www.michigan.gov/leo/bureaus-agencies/wd/going-pro",urlLabel:"Michigan Going PRO Portal",eligibility:"Michigan employers providing occupationally specific training leading to a credential or industry-recognized certification.",howToApply:"michigan.gov/leo; applications open in spring; delivered through Michigan Works! agencies.",notes:"⭐ UP TO $900,000 per project. Carter's Plumbing (SE Michigan, 42 emp) and Levine & Sons (Southfield, 58+ emp) should BOTH apply. One of the most valuable state workforce grants in the US.",tags:["Michigan","MI","Going PRO","Carter's Plumbing","Levine Sons","large grant"]},
+  {id:261,name:"Michigan Apprenticeship Program Plus (MAP+)",states:["MI"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Wage Subsidy",level:"State",agency:"Michigan LEO / Michigan Works!",act:"Michigan Going PRO expansion",maxBenefit:3000,benefitUnit:"per apprentice wage subsidy",calcMax:3000,valueBasis:"per apprentice",url:"https://www.michigan.gov/leo/bureaus-agencies/wd/going-pro",urlLabel:"Michigan Works! Portal",eligibility:"MI employers with registered apprenticeship programs.",howToApply:"Apply through Michigan Works! agencies after DOL apprenticeship registration.",notes:"Supplements Going PRO for registered apprenticeships. Wage subsidy during apprenticeship + training cost reimbursement. Stack with federal OJT and WOTC.",tags:["Michigan","MI","apprenticeship","MAP+","wage subsidy"]},
+  {id:270,name:"NH Job Training Fund",states:["NH"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"NH Dept. of Business and Economic Affairs",act:"NH RSA 188-F Job Training Fund",maxBenefit:100000,benefitUnit:"per employer project",calcMax:100000,valueBasis:"project grant",url:"https://www.nheconomy.com/workforce/job-training-fund",urlLabel:"NH Job Training Fund",eligibility:"NH businesses training workers in all industries.",howToApply:"nheconomy.com; apply through NH Job Training Fund coordinator.",notes:"Live Free Heating Cooling Electric (Concord) and TCC (Concord) are both NH Sila brands. A joint NH application from both brands could maximize the award.",tags:["New Hampshire","NH","training fund","Live Free","TCC","Concord"]},
+  {id:280,name:"NJ Chapter 12 Employer Apprenticeship Credit",states:["NJ"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Tax Credit",level:"State",agency:"NJ Dept. of Labor / NJ Division of Taxation",act:"NJ Apprenticeship Law (NJSA 34:15A)",maxBenefit:5000,benefitUnit:"per apprentice per year",calcMax:5000,valueBasis:"per apprentice/yr",url:"https://www.nj.gov/labor/career-services/apprenticeship/employers.shtml",urlLabel:"NJ DOL Apprenticeship",eligibility:"NJ employers with state-registered apprenticeship programs.",howToApply:"Register with NJ DOL Apprenticeship first; apply for Chapter 12 credit with NJ Division of Taxation on corporate return.",notes:"Allied Experts (Cherry Hill, NJ, 85 employees serving most of NJ) is a strong candidate. $5,000/apprentice is among the highest state credits nationally.",tags:["New Jersey","NJ","apprenticeship","tax credit","Allied Experts","Cherry Hill"]},
+  {id:281,name:"NJ Incumbent Worker Training Program",states:["NJ"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"NJ Dept. of Labor",act:"NJ Workforce Development Partnership Act",maxBenefit:50000,benefitUnit:"per employer",calcMax:50000,valueBasis:"project grant",url:"https://www.nj.gov/labor/career-services/support/businessresources/workforcetrainingprograms.shtml",urlLabel:"NJ Workforce Training Programs",eligibility:"NJ employers training existing workers in in-demand skills.",howToApply:"njworkforce.gov; apply through NJ One-Stop Career Center.",notes:"NATE certifications, EPA 608, diagnostic training, ServiceTitan — all qualify. Allied Experts' 85 employees represent a strong application.",tags:["New Jersey","NJ","incumbent","upskill","training","Allied Experts"]},
+  {id:290,name:"Empire State Apprenticeship Tax Credit (NY)",states:["NY"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Tax Credit",level:"State",agency:"NYS Dept. of Labor / NY Empire State Development",act:"NY Tax Law §210-B",maxBenefit:5000,benefitUnit:"per apprentice yr 1 (+$1,250-$2,500/yr ongoing)",calcMax:5000,valueBasis:"per apprentice/yr",url:"https://dol.ny.gov/apprenticeship-training-1",urlLabel:"NYS DOL Apprenticeship Unit",eligibility:"NY employers with DOL-registered apprenticeship programs.",howToApply:"Apply through NYS DOL Apprenticeship Training unit; claim on NY CT-601 corporate tax form.",notes:"NY Sila brands: Astar (Middletown), Auchinachie (Binghamton), Essential Power (Lagrangeville), Jones (Goshen), JSP (Kingston), Sila White Plains, T-Mark (Buffalo). Coordinate a NY-wide strategy.",tags:["New York","NY","Empire State","apprenticeship","tax credit","Hudson Valley"]},
+  {id:291,name:"NY Consolidated Funding Application (CFA)",states:["NY"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"NY Empire State Development / Regional Councils",act:"NY Regional Economic Development Act",maxBenefit:500000,benefitUnit:"per regional application",calcMax:500000,valueBasis:"project grant",url:"https://esd.ny.gov/consolidated-funding-application",urlLabel:"NY CFA Portal at esd.ny.gov",eligibility:"NY employers applying through regional economic development councils.",howToApply:"esd.ny.gov/cfa; applications open summer for fall awards; align with regional economic development priorities.",notes:"Multiple NY Sila brands in different regions can each submit CFA applications. Mid-Hudson Valley (Astar, Jones, JSP) and Southern Tier (Auchinachie) should coordinate submissions.",tags:["New York","NY","CFA","regional","economic development"]},
+  {id:300,name:"Ohio TechCred Program",states:["OH"],trades:["HVAC","Plumbing","Electrical","Technology","ALL"],category:"State",type:"Grant",level:"State",agency:"Ohio Dept. of Development",act:"Ohio TechCred Program",maxBenefit:30000,benefitUnit:"$2,000 per credential, up to $30,000/employer/quarter",calcMax:30000,valueBasis:"per employer/quarter",url:"https://techcred.ohio.gov",urlLabel:"Apply at techcred.ohio.gov",eligibility:"Ohio employers paying employees to earn tech-focused credentials. NATE, EPA 608, building automation, diagnostic tech credentials all qualify.",howToApply:"techcred.ohio.gov; applications open QUARTERLY. Apply one application per round per employer.",notes:"⭐ APPLY EVERY QUARTER. Six OH brands (A to Z, Ainsley, Best, Bonsky, Coblentz, Jackson Comfort — 250+ employees). NATE, EPA 608, building automation = $2,000 each, $30,000/brand/round.",tags:["Ohio","OH","TechCred","credential","NATE","EPA 608","quarterly","Jackson Comfort"]},
+  {id:301,name:"Ohio Incumbent Worker Training (IWT)",states:["OH"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"Ohio Dept. of Jobs and Family Services / OhioMeansJobs",act:"Ohio WIOA Implementation",maxBenefit:4000,benefitUnit:"per employee trained",calcMax:4000,valueBasis:"per employee",url:"https://jfs.ohio.gov/workforce-partners/employer-resources",urlLabel:"Ohio JFS Employer Resources",eligibility:"Ohio employers training current workers in skills that prevent layoffs or increase wages.",howToApply:"ohiomeansjobs.com; apply through local OhioMeansJobs center.",notes:"Stack with TechCred: NATE certification (TechCred $2,000) + broader training (IWT $4,000) = $6,000 per Ohio technician.",tags:["Ohio","OH","incumbent worker","IWT","OhioMeansJobs","upskill"]},
+  {id:310,name:"WEDnet — Pennsylvania Workforce Development",states:["PA"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"PA DCED / WEDnet",act:"Pennsylvania Workforce Development Act",maxBenefit:null,benefitUnit:"$450-$850 per employee for customized training",calcMax:850,valueBasis:"per employee",url:"https://www.wednetpa.edu/how-to-apply/",urlLabel:"Apply at wednetpa.edu",eligibility:"PA businesses; customized training delivered by approved providers (typically community colleges).",howToApply:"wednetpa.org; work with a WEDnet provider before training begins.",notes:"Available to all 9 PA Sila brands. A-Comfort, Adam Home, Delco, ECS, Gary & Sons, Oxford, Sila KoP, Sullivan, Triangle. Hundreds of PA employees eligible.",tags:["Pennsylvania","PA","WEDnet","training","all PA brands"]},
+  {id:311,name:"PA Industry Partnerships Program",states:["PA"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant",level:"State",agency:"PA Dept. of Labor & Industry",act:"PA Workforce Development Act",maxBenefit:200000,benefitUnit:"per industry partnership",calcMax:200000,valueBasis:"project grant",url:"https://www.pa.gov/agencies/dli/resources/for-employers/industry-partnerships.html",urlLabel:"PA Industry Partnerships",eligibility:"Multi-employer industry partnerships in PA. HVAC/Plumbing/Mechanical sector eligible.",howToApply:"pa.gov/agencies/dli; work with local WDB to form an industry partnership.",notes:"Sila's 9 PA brands (250+ employees) are a ready-made industry partnership. A Sila-led PA Home Services Industry Partnership could apply for a $200K grant for shared training.",tags:["Pennsylvania","PA","industry partnership","multi-employer","9 brands","consortium"]},
+  {id:312,name:"PA Apprenticeship Tax Credit",states:["PA"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Tax Credit",level:"State",agency:"PA Dept. of Revenue",act:"Pennsylvania Tax Reform Code §1717-F",maxBenefit:2500,benefitUnit:"per apprentice per year",calcMax:2500,valueBasis:"per apprentice/yr",url:"https://www.revenue.pa.gov/TaxTypes/CT/Pages/Apprenticeship-Tax-Credit.aspx",urlLabel:"PA Revenue Apprenticeship Credit",eligibility:"PA employers with state or federally-registered apprenticeship programs.",howToApply:"Apply with PA Department of Revenue on PA corporate tax return; attach certification from PA DOL.",notes:"Stack PA Credit ($2,500) + WOTC ($9,600) + OJT (50-75% wages). For a veteran apprentice at $22/hr over 8 weeks, total offset could exceed $12,000 per hire.",tags:["Pennsylvania","PA","apprenticeship","tax credit","stacking"]},
+  {id:320,name:"Virginia Talent Accelerator Program (VTAP)",states:["VA"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant / Training Services",level:"State",agency:"Virginia Economic Development Partnership (VEDP)",act:"Virginia Workforce Development Act",maxBenefit:null,benefitUnit:"Full cost of customized training (no stated cap)",calcMax:500000,valueBasis:"estimated project value",url:"https://www.yesvirginia.org/Why-Virginia/Talent-Solution/VTAP",urlLabel:"VEDP VTAP Program",eligibility:"Companies committing to job creation or significant expansion in Virginia.",howToApply:"yesvirginia.org/vtap; work with VEDP on a workforce development proposal tied to expansion plans.",notes:"Guy Smith (VA Beach, 64 emp), John Nugent (Northern VA, 105 emp), My Plumber Plus (Manassas, 150 emp). If any are expanding, VTAP funds a full customized training program at no cost.",tags:["Virginia","VA","VTAP","customized","Guy Smith","John Nugent","My Plumber Plus"]},
+  {id:321,name:"Virginia FastForward — Community College Credentials",states:["VA"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Student Grant",level:"State",agency:"Virginia Community College System (VCCS)",act:"FastForward Program (Virginia Budget Act)",maxBenefit:3000,benefitUnit:"75% of credential program cost per student",calcMax:3000,valueBasis:"per student",url:"https://www.vccs.edu/fastforward/",urlLabel:"Virginia FastForward Program",eligibility:"Virginia residents enrolling in qualifying short-term credentials at VA community colleges. HVAC, Plumbing, Electrical explicitly listed.",howToApply:"va.vccs.edu; partner with local VCCS to co-recruit graduates for apprenticeship.",notes:"VA community colleges offer FastForward-funded HVAC/plumbing/electrical credentials covering 75% of cost. VA Sila brands partner with VCCS to recruit graduates into apprenticeships.",tags:["Virginia","VA","FastForward","VCCS","credential","pipeline"]},
+  {id:330,name:"Vermont Training Program (VTP)",states:["VT"],trades:["ALL"],category:"State",type:"Grant",level:"State",agency:"Vermont Dept. of Economic Development",act:"Vermont Training Program",maxBenefit:35000,benefitUnit:"per employer project",calcMax:35000,valueBasis:"project grant",url:"https://accd.vermont.gov/economic-development/funding-incentives/vermont-training-program",urlLabel:"Vermont Training Program",eligibility:"VT businesses training workers in skills needed for specific jobs.",howToApply:"accd.vermont.gov/economic-development/training; apply before training begins with a training plan.",notes:"Green Mountain Plumbing (Woodstock, VT, 10+ employees) can access up to $35,000. Vermont Technical College is a strong delivery partner for HVAC/plumbing RTI.",tags:["Vermont","VT","training program","Green Mountain","Woodstock"]},
+  {id:340,name:"Wisconsin Fast Forward",states:["WI"],trades:["HVAC","Plumbing","Electrical","ALL"],category:"State",type:"Grant",level:"State",agency:"Wisconsin Technical College System / WI DWD",act:"Wisconsin Act 9 and successor appropriations",maxBenefit:400000,benefitUnit:"per employer/technical college project",calcMax:400000,valueBasis:"project grant",url:"https://dwd.wisconsin.gov/fastforward/",urlLabel:"WI Fast Forward at dwd.wi.gov",eligibility:"WI employers partnering with WI Technical College for customized training.",howToApply:"dwd.wisconsin.gov/fastforward; partner with MATC for New Berlin brands.",notes:"New Berlin Heating & Air (New Berlin, WI, 19 employees). Fast Forward can fund a customized HVAC training program delivered through MATC at up to $400,000 — transformative for a smaller brand.",tags:["Wisconsin","WI","Fast Forward","WTCS","MATC","New Berlin"]},
+  {id:400,name:"CDFI Fund — Financial Assistance Awards",states:["ALL"],trades:["Technology"],category:"Federal-Grant",type:"Grant",level:"Federal",agency:"CDFI Fund / U.S. Treasury",act:"Riegle Community Development Banking Act (1994)",maxBenefit:2000000,benefitUnit:"per CDFI applicant per round",calcMax:2000000,valueBasis:"project grant",url:"https://www.cdfifund.gov/programs-training/Programs/fa",urlLabel:"CDFI Fund FA Program",eligibility:"Certified CDFIs. Relevant to Sila's Goldman Sachs PE structure and potential CDFI-certified subsidiaries.",howToApply:"cdfifund.gov; obtain CDFI certification first.",notes:"Relevant to Sila's Goldman Sachs PE ownership. Training of staff at a CDFI-certified subsidiary is an eligible use of FA funds.",tags:["CDFI","PE","Goldman Sachs","finance"]},
+  {id:401,name:"New Markets Tax Credit (NMTC)",states:["ALL"],trades:["ALL"],category:"Federal-Tax",type:"Tax Credit",level:"Federal",agency:"CDFI Fund / U.S. Treasury",act:"Community Renewal Tax Relief Act (2000)",maxBenefit:39,benefitUnit:"% tax credit on qualified equity investments",calcMax:0,valueBasis:"% of investment",url:"https://www.cdfifund.gov/programs-training/Programs/nmtc",urlLabel:"CDFI Fund NMTC Program",eligibility:"Investments in low-income communities via certified CDEs. Training facilities in LICs qualify.",howToApply:"cdfifund.gov; CDE certification required.",notes:"Training centers built in low-income communities served by Sila brands qualify for NMTC financing — reducing capital cost of training infrastructure by ~39%.",tags:["NMTC","investment","low-income","training facility"]}
 ];
 const ACTS=[
-  {name:"E.O. 'Preparing Americans for High-Paying Skilled Trade Jobs of the Future'",year:2025,scope:"Directs DOL/DOC/DOE to reach 1 million new apprentices; expand trades apprenticeship; reduce regulatory barriers; leverage Pell for CTE. Signed April 23, 2025 by President Trump.",agency:"DOL / DOC / DOE",highlight:true},
-  {name:"Workforce Innovation and Opportunity Act (WIOA)",year:2014,scope:"Core federal workforce development law funding OJT, IWT, apprenticeship, adult/dislocated/youth programs through Workforce Development Boards",agency:"DOL / ETA"},
-  {name:"National Apprenticeship Act",year:1937,scope:"Authorizes DOL Office of Apprenticeship to register programs nationally across all industries. Under Trump EO, processing streamlined.",agency:"DOL"},
-  {name:"Consolidated Appropriations Act (WOTC extension)",year:2021,scope:"Extended Work Opportunity Tax Credit through December 31, 2025. File Form 8850 within 28 days of each eligible hire.",agency:"IRS / DOL"},
-  {name:"Inflation Reduction Act (IRA)",year:2022,scope:"Clean energy investment with bonus credits (up to +10%) for prevailing wage + apprenticeship compliance. Direct relevance for HVAC heat pump and mini-split installers.",agency:"DOE / DOL / IRS"},
-  {name:"Carl D. Perkins Career and Technical Education Act",year:2018,scope:"Federal funding for CTE programs at secondary and postsecondary institutions. HVAC, Electrical, Plumbing are listed priority CTE occupations. Employer partnerships enable cost-sharing.",agency:"Dept. of Education"},
-  {name:"Post-9/11 GI Bill (Chapter 33)",year:2008,scope:"VA education benefit covering OJT and registered apprenticeships. VA pays Monthly Housing Allowance ($1,800-$2,717/month) directly to veteran apprentice on top of employer wages.",agency:"VA"},
-  {name:"National Defense Authorization Act — SkillBridge",year:"Annual",scope:"Authorizes DOD SkillBridge: active duty service members intern/apprentice at civilian employers for 4-6 months at zero cost to employer. DOD pays their full military salary.",agency:"DOD"},
-  {name:"Higher Education Act — Pell Grant",year:1965,scope:"Federal Pell Grants up to $7,395/year. 2023 FAFSA Simplification Act expanded Pell to short-term CTE programs (8+ weeks). Under Trump EO, Pell for trades CTE is an explicit 1-million-apprentice lever.",agency:"Dept. of Education"},
-  {name:"Trade Adjustment Assistance Reauthorization Act",year:2015,scope:"TAA covers 100% training costs for trade-displaced workers. HVAC/Plumbing/Electrical are approved retraining occupations in most states. Strong pipeline source for Sila brands.",agency:"DOL / ETA"},
-  {name:"Riegle Community Development Banking Act",year:1994,scope:"Created the CDFI Fund. Relevant to Sila/Goldman Sachs PE subsidiaries that may qualify for CDFI certification and financial assistance awards.",agency:"Treasury / CDFI Fund"},
+  {name:"E.O. 'Preparing Americans for High-Paying Skilled Trade Jobs of the Future'",year:2025,scope:"Directs DOL/DOC/DOE to reach 1 million new apprentices; expand trades apprenticeship; reduce regulatory barriers; leverage Pell for CTE. Signed April 23, 2025.",agency:"DOL / DOC / DOE",highlight:true,url:"https://www.whitehouse.gov/presidential-actions/2025/04/preparing-americans-for-high-paying-skilled-trade-jobs-of-the-future/"},
+  {name:"Workforce Innovation and Opportunity Act (WIOA)",year:2014,scope:"Core federal workforce law funding OJT, IWT, apprenticeship, adult/dislocated/youth programs through WDBs.",agency:"DOL / ETA",url:"https://www.dol.gov/agencies/eta/wioa"},
+  {name:"National Apprenticeship Act",year:1937,scope:"Authorizes DOL Office of Apprenticeship to register programs nationally. Processing streamlined under Trump EO.",agency:"DOL",url:"https://www.apprenticeship.gov"},
+  {name:"Consolidated Appropriations Act (WOTC extension)",year:2021,scope:"Extended Work Opportunity Tax Credit through December 31, 2025. File Form 8850 within 28 days of each eligible hire.",agency:"IRS / DOL",url:"https://www.dol.gov/agencies/eta/wotc"},
+  {name:"Inflation Reduction Act (IRA)",year:2022,scope:"Clean energy investment credits with +10% bonus for prevailing wage + apprenticeship compliance. Direct relevance for HVAC heat pump and mini-split installers.",agency:"DOE / DOL / IRS",url:"https://www.energy.gov/lpo/inflation-reduction-act-2022"},
+  {name:"Carl D. Perkins CTE Act",year:2018,scope:"Federal funding for CTE programs. HVAC, Electrical, Plumbing are priority occupations. Employer partnerships enable cost-sharing.",agency:"Dept. of Education",url:"https://cte.ed.gov/legislation/perkins-v"},
+  {name:"Post-9/11 GI Bill (Chapter 33)",year:2008,scope:"VA benefit covering OJT and registered apprenticeships. VA pays Monthly Housing Allowance ($1,800-$2,717/month) directly to veteran apprentice on top of employer wages.",agency:"VA",url:"https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/"},
+  {name:"National Defense Authorization Act — SkillBridge",year:"Annual",scope:"Active duty service members intern/apprentice with civilian employers for 4-6 months at zero cost to employer. DOD pays their full military salary.",agency:"DOD",url:"https://skillbridge.defense.gov"},
+  {name:"Higher Education Act — Pell Grant",year:1965,scope:"Pell Grants up to $7,395/year. 2023 FAFSA Simplification Act expanded Pell to short-term CTE programs (8+ weeks). Under Trump EO, Pell for CTE/trades is a priority lever.",agency:"Dept. of Education",url:"https://studentaid.gov/understand-aid/types/grants/pell"},
+  {name:"Trade Adjustment Assistance Reauthorization Act",year:2015,scope:"TAA covers 100% training costs for trade-displaced workers. HVAC/Plumbing/Electrical are approved retraining occupations in most states.",agency:"DOL / ETA",url:"https://www.dol.gov/agencies/eta/tradeact"},
 ];
 const AGENCIES=[
-  {name:"DOL Employment & Training Administration (ETA)",dept:"Dept. of Labor",url:"https://eta.dol.gov",role:"Administers WIOA grants, OJT, Registered Apprenticeship, Federal Bonding, TAA. Primary contact for all WIOA-funded programs."},
-  {name:"DOL Office of Apprenticeship",dept:"Dept. of Labor",url:"https://apprenticeship.gov",role:"Register apprenticeship programs nationally. Under Trump EO, processing streamlined. Administer Apprenticeship Building America grants."},
-  {name:"American Job Centers (AJC) / Workforce Development Boards",dept:"DOL / State / Local",url:"https://careeronestop.org",role:"Execute OJT agreements; Incumbent Worker Training; WIOA youth/adult/dislocated. First point of contact for all WIOA programs. Must engage BEFORE hiring for OJT."},
-  {name:"VA Education Benefits Service",dept:"Veterans Affairs",url:"https://va.gov/education",role:"GI Bill OJT/apprenticeship approval (Ch. 33, 30, 31). SkillBridge employer registration. Approve employer programs for veteran GI Bill benefits."},
-  {name:"DOD SkillBridge",dept:"Dept. of Defense",url:"https://skillbridge.defense.gov",role:"Register as employer for active-duty internships/apprenticeships at zero cost. Post opportunities; receive transitioning service members pre-screened."},
-  {name:"Federal Student Aid (Pell / FAFSA)",dept:"Dept. of Education",url:"https://studentaid.gov",role:"Pell Grant administration for students in CTE/workforce programs. Expanded eligibility for short-term programs (8+ weeks). Partner with community colleges."},
-  {name:"IRS (Tax Credits & Plans)",dept:"Treasury",url:"https://irs.gov/credits-deductions",role:"WOTC administration; §127 educational plan compliance; IRA clean energy credits; R&E credit; Form 8850 for WOTC."},
-  {name:"NCCER",dept:"Industry / Non-Profit",url:"https://nccer.org",role:"National craft training credentials for HVAC, Plumbing, Electrical. Accelerates DOL apprenticeship registration. Credentials qualify for Pell-eligible community college programs."},
-  {name:"PHCC Educational Foundation",dept:"Industry / Non-Profit",url:"https://phccfoundation.org",role:"Plumbing/HVAC scholarships; RTI cost support; technician development grants. Apply annually by March."},
-  {name:"Helmets to Hardhats",dept:"Non-Profit / DOL Partner",url:"https://helmetstohardhats.org",role:"Veteran-to-trades pipeline. Employer registration for apprenticeship slots. Pre-screened veteran candidates with transferable mechanical skills."},
-  {name:"Economic Development Administration (EDA)",dept:"Dept. of Commerce",url:"https://eda.gov",role:"Good Jobs Challenge coalition grants; tech hub workforce programs. Sila's multi-brand structure is ideal for leading a coalition application."},
-  {name:"Dept. of Energy — Workforce Programs",dept:"Dept. of Energy",url:"https://energy.gov/workforce",role:"Clean energy workforce grants under IRA; heat pump/HVAC training programs. State partners include Efficiency Maine, NYSERDA, NJ BPU."},
+  {name:"DOL Office of Apprenticeship",dept:"Dept. of Labor",url:"https://www.apprenticeship.gov/employers/registered-apprenticeship-program",role:"Register apprenticeship programs nationally. Streamlined under Trump EO. START HERE for apprenticeship setup."},
+  {name:"American Job Centers / Workforce Development Boards",dept:"DOL / State / Local",url:"https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx",role:"Execute OJT agreements; IWT grants; WIOA programs. Must engage BEFORE hiring for OJT. Find your local WDB here."},
+  {name:"VA Education Benefits — OJT & Apprenticeship",dept:"Veterans Affairs",url:"https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/",role:"GI Bill OJT/apprenticeship employer approval. Ch. 33, 30, 31 administration. SkillBridge employer registration."},
+  {name:"DOD SkillBridge",dept:"Dept. of Defense",url:"https://skillbridge.defense.gov/Employers/Enrollment-Process.htm",role:"Register as employer for active-duty internships at zero cost. Post opportunities; receive transitioning service members."},
+  {name:"CareerOneStop — Federal & State Grants",dept:"DOL / Dept. of Education",url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx?secondaryNavPanels=BA%3D%3D",role:"Central directory of state and federal training grants. Best starting point for OJT, IWT, and state grants."},
+  {name:"IRS — WOTC & Tax Credits",dept:"Treasury",url:"https://www.irs.gov/businesses/small-businesses-self-employed/work-opportunity-tax-credit",role:"WOTC (Form 8850); §127 educational plan compliance; IRA clean energy credits; R&E credit guidance."},
+  {name:"Federal Student Aid (Pell / FAFSA)",dept:"Dept. of Education",url:"https://studentaid.gov/understand-aid/types/grants/pell",role:"Pell Grant for CTE students. Expanded to short-term programs (8+ weeks). Partner with community colleges."},
+  {name:"NCCER",dept:"Industry / Non-Profit",url:"https://www.nccer.org/about/become-a-sponsor",role:"National craft training credentials for HVAC, Plumbing, Electrical. Accelerates DOL registration. Pell-eligible programs."},
+  {name:"Helmets to Hardhats",dept:"Non-Profit / DOL Partner",url:"https://helmetstohardhats.org/employers/",role:"Veteran-to-trades pipeline. Register employer apprenticeship slots. Pre-screened veteran candidates."},
+  {name:"PHCC Educational Foundation",dept:"Industry / Non-Profit",url:"https://www.phccfoundation.org/scholarships/employer-sponsor-scholarship/",role:"Plumbing/HVAC scholarships and RTI cost support. Apply by March annually."},
+  {name:"Economic Development Administration (EDA)",dept:"Dept. of Commerce",url:"https://eda.gov/funding",role:"Good Jobs Challenge coalition grants. Sila's multi-brand structure is ideal for leading a coalition application."},
+];
+const BASIC_REQUIREMENTS=[
+  {icon:"📋",req:"Valid EIN + registered as employer in your state","detail":"Required for all programs. Must be in good standing with state and federal tax authorities."},
+  {icon:"📝",req:"Written training plan or apprenticeship outline","detail":"Most grants require a documented plan BEFORE training begins. OJT agreements must precede the hire."},
+  {icon:"👥",req:"W-2 employees only (not 1099 contractors)","detail":"All programs require participants to be direct W-2 employees. Independent contractors are not eligible."},
+  {icon:"⏰",req:"Apply BEFORE training begins","detail":"Critical for OJT, IWT, and most state grants. Retroactive applications are almost never accepted."},
+  {icon:"🗂",req:"Maintain training records and payroll documentation","detail":"Wage records, training hours, credential attainment, and supervisor attestations are required for reimbursement claims."},
+  {icon:"🏛",req:"No outstanding federal or state tax liens","detail":"Most programs require good standing with taxing authorities. Resolve any outstanding obligations before applying."},
+];
+const NEXT_STEPS=[
+  {priority:"This Week",action:"Register your apprenticeship at apprenticeship.gov",detail:"Takes 2-4 hours online. Unlocks WOTC stacking, state credits, GI Bill eligibility, and IRA bonus credits simultaneously.",url:"https://www.apprenticeship.gov/employers/registered-apprenticeship-program"},
+  {priority:"This Week",action:"Call your local American Job Center to set up OJT",detail:"Find your WDB at careeronestop.org. Execute an OJT agreement BEFORE your next new hire — retroactive claims are not permitted.",url:"https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx"},
+  {priority:"This Month",action:"Assign a WOTC owner and file Form 8850 process",detail:"File IRS Form 8850 within 28 DAYS of each eligible hire. Assign someone to own this. One missed deadline = permanent forfeiture.",url:"https://www.dol.gov/agencies/eta/wotc"},
+  {priority:"This Month",action:"Register as a DOD SkillBridge employer",detail:"Takes 30 minutes at skillbridge.defense.gov. Post apprenticeship slots. Receive active-duty candidates at $0 labor cost within 60 days.",url:"https://skillbridge.defense.gov/Employers/Enrollment-Process.htm"},
+  {priority:"This Quarter",action:"Apply for your top state program",detail:"OH: TechCred (quarterly deadline). MI: Going PRO (spring). MA: Workforce Training Fund. PA: WEDnet. Apply for the highest-value program in your state first.",url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx"},
+  {priority:"This Quarter",action:"Establish a §127 Educational Assistance Plan",detail:"One-time setup with any employment attorney (~$1-2K legal cost). Immediately enables tax-free NATE/EPA 608/community college benefits for all technicians.",url:"https://www.irs.gov/publications/p15-b"},
+  {priority:"Ongoing",action:"VA-approve your apprenticeship program for GI Bill",detail:"At va.gov/education — allows veteran apprentices to receive $1,800-$2,717/month from VA on top of their Sila wage, at zero cost to you.",url:"https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/"},
 ];
 </script>
 <script type="text/babel">
 const{useState,useMemo}=React;
-const TC={"Presidential":"#E8A020","Tax Credit":"#C8A84B","Tax Exclusion":"#8BB5A0","Tax Incentive Bonus":"#C8A84B","Wage Reimbursement":"#6B9EC7","Grant":"#A07CC5","Grant + Expedited Access":"#E8A020","Training Partnership + Pipeline":"#5BAA72","Benefit-in-Kind":"#8BB5A0","Certification + Grant Access":"#6ABFC0","Education Benefit":"#78B5D8","Free Labor Pipeline":"#D4763A","Recruitment Pipeline":"#7B8FA8","Student Grant":"#8BB5A0","Grant (via Institution Partnership)":"#A07CC5","Training Grant (Worker-Directed)":"#7B8FA8","Grant / Training Services":"#5BAA72","Tax Credit + Wage Subsidy":"#C8A84B","Wage Subsidy":"#6B9EC7","Grant + Technical Assistance":"#A07CC5","Grant (via Community Partner)":"#5BAA72"};
+const TC={"Presidential":"#E8A020","Tax Credit":"#C8A84B","Tax Exclusion":"#8BB5A0","Tax Incentive Bonus":"#C8A84B","Wage Reimbursement":"#6B9EC7","Grant":"#A07CC5","Grant + Expedited Access":"#E8A020","Training Partnership":"#5BAA72","Benefit-in-Kind":"#8BB5A0","Certification + Grant Access":"#6ABFC0","Education Benefit":"#78B5D8","Free Labor Pipeline":"#D4763A","Recruitment Pipeline":"#7B8FA8","Student Grant":"#8BB5A0","Grant (via Institution Partnership)":"#A07CC5","Training Grant (Worker-Directed)":"#7B8FA8","Grant / Training Services":"#5BAA72","Wage Subsidy":"#6B9EC7","Grant + Technical Assistance":"#A07CC5","Grant (via Community Partner)":"#5BAA72"};
 const getTC=t=>TC[t]||"#8899A8";
 const CAT_LABELS={"Presidential":"⚡ Presidential EO","Federal-Tax":"💰 Tax Credit","Federal-Grant":"🏛 Federal Grant","Federal-Wage":"💵 Wage Subsidy","Trades":"🔧 Trades-Specific","Veterans":"🎖 Veterans / GI Bill","Education":"🎓 Education / Pell","State":"📍 State Program"};
-const CAT_BG={"Presidential":"rgba(232,160,32,0.12)","Federal-Tax":"rgba(200,168,75,0.08)","Federal-Grant":"rgba(160,124,197,0.08)","Federal-Wage":"rgba(107,158,199,0.08)","Trades":"rgba(106,191,192,0.08)","Veterans":"rgba(120,181,216,0.08)","Education":"rgba(139,181,160,0.08)","State":"rgba(91,170,114,0.08)"};
+const CAT_BG={"Presidential":"rgba(232,160,32,0.1)","Federal-Tax":"rgba(200,168,75,0.07)","Federal-Grant":"rgba(160,124,197,0.07)","Federal-Wage":"rgba(107,158,199,0.07)","Trades":"rgba(106,191,192,0.07)","Veterans":"rgba(120,181,216,0.07)","Education":"rgba(139,181,160,0.07)","State":"rgba(91,170,114,0.07)"};
 const TRADE_FILTERS=[{key:"ALL",label:"All Programs",icon:"📋"},{key:"HVAC",label:"HVAC",icon:"🌡️"},{key:"Plumbing",label:"Plumbing",icon:"🪠"},{key:"Electrical",label:"Electrical",icon:"⚡"},{key:"Veterans",label:"Veterans / GI",icon:"🎖"},{key:"Education",label:"Pell / CTE",icon:"🎓"},{key:"Technology",label:"Technology",icon:"💻"}];
 const SS=`
 *{box-sizing:border-box;margin:0;padding:0}
@@ -191,7 +203,7 @@ body{font-family:'DM Sans',sans-serif;color:#E2D9C5}
 .loc-sel:focus{border-color:#D4A832;box-shadow:0 0 0 3px rgba(212,168,50,.12)}.loc-sel option,.loc-sel optgroup{background:#0D1E30;color:#E2D9C5}
 .srch{font-family:'DM Sans',sans-serif;font-size:14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(212,168,50,.2);color:#E2D9C5;border-radius:9px;padding:10px 14px;outline:none;width:100%;transition:border .2s}
 .srch::placeholder{color:#2A4050}.srch:focus{border-color:#D4A832}
-.fsel{font-family:'DM Sans',sans-serif;font-size:13px;background:rgba(10,24,38,.9);border:1.5px solid rgba(212,168,50,.2);color:#E2D9C5;border-radius:9px;padding:10px 12px;outline:none;cursor:pointer;transition:border .2s}.fsel:focus{border-color:#D4A832}.fsel option{background:#0D1E30}
+.fsel{font-family:'DM Sans',sans-serif;font-size:13px;background:rgba(10,24,38,.95);border:1.5px solid rgba(212,168,50,.2);color:#E2D9C5;border-radius:9px;padding:10px 12px;outline:none;cursor:pointer}.fsel:focus{border-color:#D4A832}.fsel option{background:#0D1E30}
 .tf-pill{display:flex;align-items:center;gap:5px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 14px;border-radius:100px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);color:#6A8A9A;cursor:pointer;white-space:nowrap;transition:all .15s}
 .tf-pill.on{background:rgba(212,168,50,.14);border-color:rgba(212,168,50,.5);color:#D4A832}.tf-pill:hover:not(.on){border-color:rgba(255,255,255,.18);color:#B0C8D4}
 .pc{border-radius:11px;padding:15px 17px;margin-bottom:9px;cursor:pointer;transition:all .18s;border:1.5px solid rgba(255,255,255,.06)}
@@ -215,7 +227,20 @@ body{font-family:'DM Sans',sans-serif;color:#E2D9C5}
 .vet-pill{background:rgba(120,181,216,.12);color:#78B5D8;border:1px solid rgba(120,181,216,.28)}
 .eo-pill{background:rgba(232,160,32,.18);color:#E8A020;border:1px solid rgba(232,160,32,.4)}
 .divider{border:none;border-top:1px solid rgba(212,168,50,.11);margin:13px 0}
+.sec-header{display:flex;align-items:center;gap:10px;padding:11px 0 8px;margin-bottom:4px}
+.sec-header-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(212,168,50,.4),transparent)}
+.url-btn{display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:#6B9EC7;text-decoration:none;background:rgba(107,158,199,.1);border:1.5px solid rgba(107,158,199,.25);border-radius:7px;padding:7px 13px;transition:all .15s}
+.url-btn:hover{background:rgba(107,158,199,.2);border-color:rgba(107,158,199,.5);color:#A0C8E4}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(212,168,50,.07);font-family:'DM Sans',sans-serif}
+.sum-row:hover{background:rgba(255,255,255,.02)}
+.sum-sub{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;font-family:'DM Sans',sans-serif;border-radius:7px;margin-top:4px}
+.sum-total{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:10px;font-family:'DM Sans',sans-serif}
+.req-row{display:flex;gap:12px;padding:11px 14px;border-radius:9px;background:rgba(255,255,255,.03);margin-bottom:7px;border:1px solid rgba(212,168,50,.08)}
+.ns-row{display:flex;gap:12px;padding:13px 14px;border-radius:9px;margin-bottom:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:border .18s;text-decoration:none}
+.ns-row:hover{border-color:rgba(107,158,199,.4)!important}
 `;
+const fmt=n=>n===0?"—":n>=1000000?`$${(n/1000000).toFixed(2)}M`:n>=1000?`$${(n/1000).toFixed(0)}K`:`$${n.toLocaleString()}`;
+const fmtFull=n=>n===0?"—":`$${n.toLocaleString()}`;
 
 function App(){
   const[tab,setTab]=useState("programs");
@@ -225,6 +250,8 @@ function App(){
   const[catF,setCatF]=useState("ALL");
   const[openId,setOpenId]=useState(null);
   const[eoOpen,setEoOpen]=useState(false);
+  const[summOpen,setSummOpen]=useState(true);
+  const[reqOpen,setReqOpen]=useState(true);
   // calc
   const[hires,setHires]=useState(5);
   const[wage,setWage]=useState(22);
@@ -256,18 +283,30 @@ function App(){
     return g;
   },[]);
 
-  const filtered=useMemo(()=>{
-    return PROGRAMS.filter(p=>{
-      const ms=!search||p.name.toLowerCase().includes(search.toLowerCase())||p.tags.some(t=>t.toLowerCase().includes(search.toLowerCase()))||(p.notes||"").toLowerCase().includes(search.toLowerCase());
-      const mt=trade==="ALL"||(trade==="Veterans"&&p.category==="Veterans")||(trade==="Education"&&p.category==="Education")||p.trades.includes(trade)||p.trades.includes("ALL");
-      const mc=catF==="ALL"||p.category===catF;
-      const mst=!selectedState||p.states.includes("ALL")||p.states.includes(selectedState);
-      return ms&&mt&&mc&&mst;
-    }).sort((a,b)=>{
-      const rank=p=>p.category==="Presidential"?0:selectedState&&p.states.includes(selectedState)&&!p.states.includes("ALL")?1:p.category==="Veterans"?2:p.category==="Education"?3:4;
+  const filterProg=p=>{
+    const ms=!search||p.name.toLowerCase().includes(search.toLowerCase())||p.tags.some(t=>t.toLowerCase().includes(search.toLowerCase()))||(p.notes||"").toLowerCase().includes(search.toLowerCase());
+    const mt=trade==="ALL"||(trade==="Veterans"&&p.category==="Veterans")||(trade==="Education"&&p.category==="Education")||p.trades.includes(trade)||p.trades.includes("ALL");
+    const mc=catF==="ALL"||p.category===catF;
+    return ms&&mt&&mc;
+  };
+
+  const statePrograms=useMemo(()=>PROGRAMS.filter(p=>selectedState&&p.states.includes(selectedState)&&!p.states.includes("ALL")&&filterProg(p)),[selectedState,search,trade,catF]);
+  const federalPrograms=useMemo(()=>PROGRAMS.filter(p=>p.states.includes("ALL")&&filterProg(p)).sort((a,b)=>{
+    const rank=p=>p.category==="Presidential"?0:p.category==="Veterans"?2:p.category==="Education"?3:1;
+    return rank(a)-rank(b);
+  }),[search,trade,catF]);
+  const allFiltered=useMemo(()=>{
+    if(selectedState) return [...statePrograms,...federalPrograms];
+    return PROGRAMS.filter(filterProg).sort((a,b)=>{
+      const rank=p=>p.category==="Presidential"?0:p.states.includes("ALL")?2:1;
       return rank(a)-rank(b);
     });
-  },[search,trade,catF,selectedState]);
+  },[selectedState,statePrograms,federalPrograms,search,trade,catF]);
+
+  // Funding summary
+  const stateTotal=useMemo(()=>statePrograms.reduce((a,p)=>a+(p.calcMax||0),0),[statePrograms]);
+  const fedTotal=useMemo(()=>federalPrograms.reduce((a,p)=>a+(p.calcMax||0),0),[federalPrograms]);
+  const grandTotal=stateTotal+fedTotal;
 
   const annWage=wage*hrs*52;
   const trnWages=wage*hrs*weeks;
@@ -278,28 +317,115 @@ function App(){
   const stateV=stateC?stateA*hires:0;
   const s127V=s127?Math.min(s127A,5250)*hires*(txR/100):0;
   const total=wotcV+ojtV+iwtV+apprV+stateV+s127V;
-  const fmt=n=>n>=1000000?`$${(n/1000000).toFixed(2)}M`:`$${Math.round(n).toLocaleString()}`;
 
   const TABS=[{id:"programs",label:"Programs"},{id:"calculator",label:"Calculator"},{id:"acts",label:"Legislation"},{id:"agencies",label:"Agencies"}];
+
+  const ProgramCard=({p,isState})=>{
+    const isOpen=openId===p.id;
+    const tc=getTC(p.type);
+    const isEO=p.category==="Presidential";
+    const isVet=p.category==="Veterans";
+    const isEdu=p.category==="Education";
+    const cardBg=isEO?"rgba(232,160,32,.07)":isState?"rgba(91,170,114,.06)":CAT_BG[p.category]||"rgba(255,255,255,.03)";
+    const cardBorder=isEO?"1.5px solid rgba(232,160,32,.38)":isState?"1.5px solid rgba(91,170,114,.28)":"1.5px solid rgba(255,255,255,.06)";
+    return(
+      <div className={`pc${isOpen?" xp":""}`} style={{background:cardBg,border:cardBorder}} onClick={()=>setOpenId(isOpen?null:p.id)}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:3,marginBottom:6}}>
+              <span className="badge" style={{background:tc+"20",color:tc,border:`1px solid ${tc}40`}}>{p.type}</span>
+              {isEO&&<span className="badge eo-pill">⚡ EO Priority</span>}
+              {isState&&<span className="badge state-pill">📍 {selectedState}</span>}
+              {isVet&&<span className="badge vet-pill">🎖 Veterans</span>}
+              {isEdu&&<span className="badge" style={{background:"rgba(139,181,160,.14)",color:"#8BB5A0",border:"1px solid rgba(139,181,160,.3)"}}>🎓 Education</span>}
+              {!isState&&!isEO&&<span className="badge fed-pill">{p.level}</span>}
+            </div>
+            <div style={{fontSize:"clamp(13px,2vw,15px)",fontWeight:600,color:"#F0E8D4",lineHeight:1.3,fontFamily:"'DM Sans',sans-serif"}}>{p.name}</div>
+            <div style={{fontSize:11,color:"#3A5C6A",marginTop:2,fontFamily:"'DM Sans',sans-serif"}}>{p.agency}</div>
+          </div>
+          <div style={{textAlign:"right",flexShrink:0,paddingLeft:8}}>
+            {p.maxBenefit!=null&&typeof p.maxBenefit==="number"&&p.maxBenefit>100?(
+              <>
+                <div style={{fontSize:18,fontWeight:800,color:isEO?"#D4A832":isState?"#5BAA72":isVet?"#78B5D8":tc,fontFamily:"'DM Sans',sans-serif",lineHeight:1}}>${p.maxBenefit.toLocaleString()}</div>
+                <div style={{fontSize:10,color:"#2A4050",maxWidth:90,textAlign:"right",fontFamily:"'DM Sans',sans-serif",lineHeight:1.3,marginTop:2}}>{p.benefitUnit}</div>
+              </>
+            ):p.maxBenefit===null?(
+              <div style={{fontSize:11,color:"#4A6070",fontFamily:"'DM Sans',sans-serif",maxWidth:80,textAlign:"right",lineHeight:1.4}}>{p.benefitUnit}</div>
+            ):(
+              <>
+                <div style={{fontSize:17,fontWeight:800,color:tc,fontFamily:"'DM Sans',sans-serif",lineHeight:1}}>{p.maxBenefit}%</div>
+                <div style={{fontSize:10,color:"#2A4050",maxWidth:90,textAlign:"right",fontFamily:"'DM Sans',sans-serif",lineHeight:1.3,marginTop:2}}>{p.benefitUnit}</div>
+              </>
+            )}
+            <div style={{color:"#D4A832",fontSize:10,marginTop:5,fontFamily:"'DM Sans',sans-serif"}}>{isOpen?"▲ close":"▼ details"}</div>
+          </div>
+        </div>
+        {isOpen&&(
+          <div style={{marginTop:13}} onClick={e=>e.stopPropagation()}>
+            <hr className="divider"/>
+            <div style={{display:"grid",gap:11}}>
+              {p.act&&<div><div className="cn">Authorizing Legislation</div><div style={{fontSize:13,color:"#B0C4D0",fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>{p.act}</div></div>}
+              <div><div className="cn">Eligibility</div><div style={{fontSize:13,color:"#B0C4D0",fontFamily:"'DM Sans',sans-serif",lineHeight:1.65}}>{p.eligibility}</div></div>
+              <div><div className="cn">How to Apply</div><div style={{fontSize:13,color:"#B0C4D0",fontFamily:"'DM Sans',sans-serif",lineHeight:1.65}}>{p.howToApply}</div></div>
+              <div style={{background:isEO?"rgba(232,160,32,.08)":"rgba(212,168,50,.07)",border:`1px solid ${isEO?"rgba(232,160,32,.22)":"rgba(212,168,50,.16)"}`,borderRadius:8,padding:"11px 14px"}}>
+                <div className="cn" style={{color:isEO?"#D4A832":"#A08030",marginBottom:4}}>💡 Strategy Note</div>
+                <div style={{fontSize:13,color:isEO?"#D4B870":"#C8BC80",lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>{p.notes}</div>
+              </div>
+              {p.url&&(
+                <div>
+                  <div className="cn" style={{marginBottom:6}}>Start the Process</div>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="url-btn" onClick={e=>e.stopPropagation()}>
+                    <span>🔗</span>{p.urlLabel||"Open Official Program Page"}<span style={{opacity:.6}}>↗</span>
+                  </a>
+                </div>
+              )}
+              <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+                <div>
+                  <div className="cn" style={{marginBottom:4}}>Applicable Trades</div>
+                  {p.trades.map(t=><span key={t} className="badge" style={{background:"rgba(106,191,192,.11)",color:"#6ABFC0",border:"1px solid rgba(106,191,192,.22)"}}>{t}</span>)}
+                </div>
+                {p.calcMax>0&&(
+                  <div>
+                    <div className="cn" style={{marginBottom:4}}>Value for Summary</div>
+                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:isState?"#5BAA72":"#C8A84B"}}>{fmtFull(p.calcMax)} <span style={{fontWeight:400,color:"#4A6070",fontSize:11}}>{p.valueBasis}</span></span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const SectionHeader=({icon,label,count,color,sub})=>(
+    <div className="sec-header">
+      <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:color||"#D4A832",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:7}}>
+        <span>{icon}</span>{label}
+        <span style={{fontWeight:400,color:"#3A5060",fontSize:11}}>({count})</span>
+      </div>
+      {sub&&<div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#3A5060",marginLeft:2,whiteSpace:"nowrap"}}>{sub}</div>}
+      <div className="sec-header-line"/>
+    </div>
+  );
 
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#0A1826 0%,#0E2038 55%,#08141E 100%)"}}>
       <style>{SS}</style>
-
       {/* HEADER */}
       <div style={{maxWidth:980,margin:"0 auto",padding:"22px 16px 0"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12,marginBottom:6}}>
           <div>
-            <p className="tb" style={{fontSize:11,letterSpacing:".17em",textTransform:"uppercase",color:"#D4A832",marginBottom:5,fontFamily:"'DM Sans',sans-serif"}}>Sila Services · Learning &amp; Development</p>
+            <p style={{fontSize:11,letterSpacing:".17em",textTransform:"uppercase",color:"#D4A832",marginBottom:5,fontFamily:"'DM Sans',sans-serif"}}>Sila Services · Learning &amp; Development</p>
             <h1 className="serif" style={{fontSize:"clamp(22px,4vw,33px)",color:"#F5EED8",letterSpacing:"-.01em",lineHeight:1.15}}>Training Incentives Navigator</h1>
-            <p style={{color:"#4A6A7A",fontSize:13,marginTop:6,lineHeight:1.6,fontFamily:"'DM Sans',sans-serif"}}>Trades-focused workforce development grants, tax credits &amp; incentives — location-aware, veteran-ready, Pell-integrated.</p>
+            <p style={{color:"#4A6A7A",fontSize:13,marginTop:6,lineHeight:1.6,fontFamily:"'DM Sans',sans-serif"}}>Location-aware · Trades-focused · Veteran-ready · Pell-integrated</p>
           </div>
           <div style={{textAlign:"right",flexShrink:0}}>
             <div style={{fontSize:11,color:"#344A58",letterSpacing:".08em",marginBottom:2,fontFamily:"'DM Sans',sans-serif"}}>KNOWLEDGE BASE</div>
             <div style={{fontSize:30,fontWeight:800,color:"#D4A832",lineHeight:1,fontFamily:"'DM Sans',sans-serif"}}>{PROGRAMS.length}</div>
             <div style={{fontSize:11,color:"#344A58",fontFamily:"'DM Sans',sans-serif"}}>programs tracked</div>
             <div style={{marginTop:7,background:"rgba(212,168,50,.09)",border:"1.5px solid rgba(212,168,50,.28)",borderRadius:100,padding:"3px 11px",display:"inline-flex",alignItems:"center",gap:5}}>
-              <span style={{width:6,height:6,borderRadius:"50%",background:"#5BAA72",display:"inline-block",flexShrink:0}}/>
+              <span style={{width:6,height:6,borderRadius:"50%",background:"#5BAA72",display:"inline-block"}}/>
               <span style={{fontSize:11,color:"#D4A832",fontFamily:"'DM Sans',sans-serif"}}>Updated {KB_LAST_UPDATED}</span>
             </div>
           </div>
@@ -309,37 +435,31 @@ function App(){
         </div>
       </div>
 
-      {/* CONTENT */}
       <div style={{maxWidth:980,margin:"0 auto",padding:"20px 16px 60px"}}>
 
-        {/* ═══ PROGRAMS ═══ */}
+        {/* ═══ PROGRAMS TAB ═══ */}
         {tab==="programs"&&(
           <div>
-            {/* Location Picker */}
+            {/* Location picker */}
             <div style={{background:"linear-gradient(135deg,rgba(212,168,50,.1),rgba(212,168,50,.03))",border:"1.5px solid rgba(212,168,50,.28)",borderRadius:13,padding:"18px 20px",marginBottom:18}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
                 <span style={{fontSize:22}}>📍</span>
                 <div>
                   <div style={{fontWeight:600,fontSize:14,color:"#F5EED8",fontFamily:"'DM Sans',sans-serif"}}>Select Your Work Location</div>
-                  <div style={{fontSize:12,color:"#4A6A7A",fontFamily:"'DM Sans',sans-serif"}}>State-specific programs surface automatically — plus all federal programs always apply</div>
+                  <div style={{fontSize:12,color:"#4A6A7A",fontFamily:"'DM Sans',sans-serif"}}>State programs surface automatically · Federal programs always shown below</div>
                 </div>
               </div>
               <div style={{position:"relative"}}>
                 <select className="loc-sel" value={loc} onChange={e=>setLoc(e.target.value)}>
-                  <option value="">— All Locations (show all federal programs) —</option>
+                  <option value="">— All Locations (show all programs) —</option>
                   {Object.entries(grouped).sort((a,b)=>a[0].localeCompare(b[0])).map(([st,locs])=>(
                     <optgroup key={st} label={`── ${STATE_NAMES[st]||st} (${st}) ──`}>
-                      {locs.map(l=>(
-                        <option key={l.brand+l.state} value={`${l.brand}|${l.state}`}>
-                          {l.brand} — {l.city}{l.emp?` · ${l.emp} emp`:""}
-                        </option>
-                      ))}
+                      {locs.map(l=><option key={l.brand+l.state} value={`${l.brand}|${l.state}`}>{l.brand} — {l.city}{l.emp?` · ${l.emp} emp`:""}</option>)}
                     </optgroup>
                   ))}
                 </select>
                 <span style={{position:"absolute",right:13,top:"50%",transform:"translateY(-50%)",color:"#D4A832",pointerEvents:"none",fontSize:13}}>▾</span>
               </div>
-
               {selectedLoc&&(
                 <div style={{marginTop:14,paddingTop:14,borderTop:"1px solid rgba(212,168,50,.15)",display:"flex",flexWrap:"wrap",gap:10,alignItems:"center"}}>
                   <div>
@@ -347,21 +467,17 @@ function App(){
                     <span style={{fontSize:13,color:"#5A7A8A",marginLeft:8,fontFamily:"'DM Sans',sans-serif"}}>{selectedLoc.city}, {selectedLoc.state}</span>
                   </div>
                   <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                    {selectedLoc.specialty.map(s=>(
-                      <span key={s} className="badge" style={{background:"rgba(106,191,192,.12)",color:"#6ABFC0",border:"1px solid rgba(106,191,192,.25)"}}>{s}</span>
-                    ))}
+                    {selectedLoc.specialty.map(s=><span key={s} className="badge" style={{background:"rgba(106,191,192,.12)",color:"#6ABFC0",border:"1px solid rgba(106,191,192,.25)"}}>{s}</span>)}
                   </div>
                   <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
                     <span className="state-pill">{stateName} Programs Active</span>
-                    {stateLocations.length>1&&(
-                      <span style={{fontSize:11,color:"#3A5060",fontFamily:"'DM Sans',sans-serif"}}>{stateLocations.length} brands in {selectedLoc.state}{totalStateEmp>0?` · ${totalStateEmp.toLocaleString()}+ employees`:""}</span>
-                    )}
+                    {stateLocations.length>1&&<span style={{fontSize:11,color:"#3A5060",fontFamily:"'DM Sans',sans-serif"}}>{stateLocations.length} brands · {totalStateEmp>0?`${totalStateEmp}+`:""} employees in {selectedLoc.state}</span>}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Presidential EO Banner */}
+            {/* Presidential EO banner */}
             <div style={{background:"linear-gradient(135deg,rgba(232,160,32,.13),rgba(180,110,20,.05))",border:"1.5px solid rgba(232,160,32,.42)",borderRadius:13,padding:"16px 18px",marginBottom:18,cursor:"pointer"}} onClick={()=>setEoOpen(!eoOpen)}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:12}}>
                 <div style={{flex:1}}>
@@ -371,13 +487,13 @@ function App(){
                   </div>
                   <div className="serif" style={{fontSize:"clamp(14px,2.2vw,18px)",color:"#F5EED8",lineHeight:1.3}}>{PRESIDENTIAL_MANDATE.title}</div>
                   <div style={{fontSize:13,color:"#C8A040",marginTop:7,fontWeight:600,fontFamily:"'DM Sans',sans-serif"}}>Goal: {PRESIDENTIAL_MANDATE.goal}</div>
-                  {!eoOpen&&<div style={{fontSize:11,color:"#6A5020",marginTop:4,fontFamily:"'DM Sans',sans-serif"}}>Tap to see full directives, Sila opportunity analysis &amp; what to watch →</div>}
+                  {!eoOpen&&<div style={{fontSize:11,color:"#6A5020",marginTop:4,fontFamily:"'DM Sans',sans-serif"}}>Tap to see directives, Sila opportunity analysis &amp; what to watch →</div>}
                 </div>
-                <div style={{color:"#D4A832",fontSize:17,flexShrink:0,paddingTop:2}}>{eoOpen?"▲":"▼"}</div>
+                <div style={{color:"#D4A832",fontSize:17,flexShrink:0}}>{eoOpen?"▲":"▼"}</div>
               </div>
               {eoOpen&&(
                 <div style={{marginTop:16,paddingTop:16,borderTop:"1px solid rgba(232,160,32,.2)"}} onClick={e=>e.stopPropagation()}>
-                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(270px,1fr))",gap:16}}>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(270px,1fr))",gap:16,marginBottom:14}}>
                     <div>
                       <div className="cn" style={{color:"#C8A040",marginBottom:8}}>KEY DIRECTIVES</div>
                       <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:7}}>
@@ -396,142 +512,207 @@ function App(){
                       <div style={{fontSize:12,color:"#A08040",lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>{PRESIDENTIAL_MANDATE.watchFor}</div>
                     </div>
                   </div>
+                  <a href="https://www.whitehouse.gov/presidential-actions/2025/04/preparing-americans-for-high-paying-skilled-trade-jobs-of-the-future/" target="_blank" rel="noopener noreferrer" className="url-btn" style={{width:"fit-content"}} onClick={e=>e.stopPropagation()}>
+                    <span>🔗</span>Read the Full Executive Order ↗
+                  </a>
                 </div>
               )}
             </div>
 
-            {/* Filter Bar */}
+            {/* Filter row */}
             <div style={{marginBottom:13}}>
               <div className="scroll-x" style={{marginBottom:9}}>
-                {TRADE_FILTERS.map(f=>(
-                  <button key={f.key} className={`tf-pill${trade===f.key?" on":""}`} onClick={()=>setTrade(f.key)}>
-                    <span>{f.icon}</span>{f.label}
-                  </button>
-                ))}
+                {TRADE_FILTERS.map(f=><button key={f.key} className={`tf-pill${trade===f.key?" on":""}`} onClick={()=>setTrade(f.key)}><span>{f.icon}</span>{f.label}</button>)}
               </div>
               <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                <div style={{flex:"1 1 210px"}}><input className="srch" placeholder="Search programs, certifications, trades, states…" value={search} onChange={e=>setSearch(e.target.value)}/></div>
+                <div style={{flex:"1 1 210px"}}><input className="srch" placeholder="Search programs, certifications, states, agencies…" value={search} onChange={e=>setSearch(e.target.value)}/></div>
                 <select className="fsel" value={catF} onChange={e=>setCatF(e.target.value)}>
                   <option value="ALL">All Categories</option>
                   {Object.entries(CAT_LABELS).map(([k,v])=><option key={k} value={k}>{v}</option>)}
                 </select>
               </div>
             </div>
-            <div style={{fontSize:12,color:"#2A4050",marginBottom:11,fontFamily:"'DM Sans',sans-serif"}}>
-              Showing {filtered.length} of {PROGRAMS.length} programs{selectedState?` · ${stateName} programs shown first`:""}
+            <div style={{fontSize:11,color:"#2A4050",marginBottom:11,fontFamily:"'DM Sans',sans-serif"}}>
+              Showing {allFiltered.length} of {PROGRAMS.length} programs{selectedState?` · ${statePrograms.length} ${stateName} state + ${federalPrograms.length} federal`:""}
             </div>
 
-            {/* Program Cards */}
-            {filtered.map(p=>{
-              const isOpen=openId===p.id;
-              const tc=getTC(p.type);
-              const isState=selectedState&&p.states.includes(selectedState)&&!p.states.includes("ALL");
-              const isEO=p.category==="Presidential";
-              const isVet=p.category==="Veterans";
-              const isEdu=p.category==="Education";
-              const cardBg=isEO?"rgba(232,160,32,.07)":isState?"rgba(91,170,114,.06)":CAT_BG[p.category]||"rgba(255,255,255,.03)";
-              const cardBorder=isEO?"1.5px solid rgba(232,160,32,.38)":isState?"1.5px solid rgba(91,170,114,.28)":"1.5px solid rgba(255,255,255,.06)";
-              return(
-                <div key={p.id} className={`pc${isOpen?" xp":""}`} style={{background:cardBg,border:cardBorder}} onClick={()=>setOpenId(isOpen?null:p.id)}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:3,marginBottom:7}}>
-                        <span className="badge" style={{background:tc+"20",color:tc,border:`1px solid ${tc}40`}}>{p.type}</span>
-                        {isEO&&<span className="badge eo-pill">⚡ EO Priority</span>}
-                        {isState&&<span className="badge state-pill">📍 {selectedLoc.state}</span>}
-                        {isVet&&<span className="badge vet-pill">🎖 Veterans</span>}
-                        {isEdu&&<span className="badge" style={{background:"rgba(139,181,160,.14)",color:"#8BB5A0",border:"1px solid rgba(139,181,160,.3)"}}>🎓 Education</span>}
-                        {!isState&&!isEO&&<span className="badge fed-pill">{p.level}</span>}
-                      </div>
-                      <div style={{fontSize:"clamp(13px,2vw,15px)",fontWeight:600,color:"#F0E8D4",lineHeight:1.3,fontFamily:"'DM Sans',sans-serif",wordBreak:"break-word"}}>{p.name}</div>
-                      <div style={{fontSize:12,color:"#3A5C6A",marginTop:3,fontFamily:"'DM Sans',sans-serif"}}>{p.agency}</div>
-                    </div>
-                    <div style={{textAlign:"right",flexShrink:0,paddingLeft:8}}>
-                      {p.maxBenefit!=null&&(
-                        <>
-                          <div style={{fontSize:18,fontWeight:800,color:isEO?"#D4A832":isState?"#5BAA72":isVet?"#78B5D8":tc,fontFamily:"'DM Sans',sans-serif",lineHeight:1}}>
-                            {typeof p.maxBenefit==="number"&&p.maxBenefit>100?`$${p.maxBenefit.toLocaleString()}`:`${p.maxBenefit}%`}
-                          </div>
-                          <div style={{fontSize:10,color:"#2A4050",maxWidth:90,textAlign:"right",fontFamily:"'DM Sans',sans-serif",lineHeight:1.3,marginTop:2}}>{p.benefitUnit}</div>
-                        </>
-                      )}
-                      {p.maxBenefit==null&&<div style={{fontSize:12,color:"#4A6070",fontFamily:"'DM Sans',sans-serif",maxWidth:80,textAlign:"right"}}>See notes</div>}
-                      <div style={{color:"#D4A832",fontSize:11,marginTop:6}}>{isOpen?"▲ close":"▼ details"}</div>
-                    </div>
-                  </div>
+            {/* Programs list — grouped when state selected */}
+            {selectedState?(
+              <>
+                {statePrograms.length>0&&(
+                  <>
+                    <SectionHeader icon="📍" label={`${stateName} State Programs`} count={statePrograms.length} color="#5BAA72" sub={`Subtotal: ${fmt(stateTotal)}`}/>
+                    {statePrograms.map(p=><ProgramCard key={p.id} p={p} isState={true}/>)}
+                  </>
+                )}
+                {federalPrograms.length>0&&(
+                  <>
+                    <SectionHeader icon="🏛" label="Federal & National Programs" count={federalPrograms.length} color="#6B9EC7" sub={`Subtotal: ${fmt(fedTotal)}`}/>
+                    {federalPrograms.map(p=><ProgramCard key={p.id} p={p} isState={false}/>)}
+                  </>
+                )}
+              </>
+            ):(
+              allFiltered.map(p=><ProgramCard key={p.id} p={p} isState={false}/>)
+            )}
 
-                  {isOpen&&(
-                    <div style={{marginTop:13}} onClick={e=>e.stopPropagation()}>
-                      <hr className="divider"/>
-                      <div style={{display:"grid",gap:12}}>
-                        {p.act&&<div><div className="cn">Authorizing Legislation</div><div style={{fontSize:13,color:"#B0C4D0",fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>{p.act}</div></div>}
-                        <div><div className="cn">Eligibility</div><div style={{fontSize:13,color:"#B0C4D0",fontFamily:"'DM Sans',sans-serif",lineHeight:1.65}}>{p.eligibility}</div></div>
-                        <div><div className="cn">How to Apply</div><div style={{fontSize:13,color:"#B0C4D0",fontFamily:"'DM Sans',sans-serif",lineHeight:1.65}}>{p.howToApply}</div></div>
-                        <div style={{background:isEO?"rgba(232,160,32,.08)":"rgba(212,168,50,.07)",border:`1px solid ${isEO?"rgba(232,160,32,.25)":"rgba(212,168,50,.17)"}`,borderRadius:8,padding:"12px 14px"}}>
-                          <div className="cn" style={{color:isEO?"#D4A832":"#A08030",marginBottom:5}}>💡 Strategy Note</div>
-                          <div style={{fontSize:13,color:isEO?"#D4B870":"#C8BC80",lineHeight:1.72,fontFamily:"'DM Sans',sans-serif"}}>{p.notes}</div>
-                        </div>
-                        <div>
-                          <div className="cn" style={{marginBottom:5}}>Applicable Trades</div>
-                          {p.trades.map(t=>(
-                            <span key={t} className="badge" style={{background:"rgba(106,191,192,.11)",color:"#6ABFC0",border:"1px solid rgba(106,191,192,.22)"}}>{t}</span>
-                          ))}
-                        </div>
-                        {p.states[0]!=="ALL"&&(
-                          <div>
-                            <div className="cn" style={{marginBottom:5}}>States</div>
-                            {p.states.map(s=>(
-                              <span key={s} className="badge state-pill" style={{marginRight:4}}>{STATE_NAMES[s]||s}</span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            {filtered.length===0&&(
+            {allFiltered.length===0&&(
               <div style={{textAlign:"center",padding:"40px 20px",color:"#2A4050",fontFamily:"'DM Sans',sans-serif"}}>
                 <div style={{fontSize:28,marginBottom:10}}>🔍</div>
                 <div style={{fontSize:14}}>No programs match your filters. Try broadening the trade type or clearing search.</div>
               </div>
             )}
+
+            {/* ── FUNDING SUMMARY ── */}
+            {selectedState&&(
+              <div style={{marginTop:28,background:"rgba(212,168,50,.04)",border:"2px solid rgba(212,168,50,.25)",borderRadius:14,overflow:"hidden"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px",background:"rgba(212,168,50,.08)",cursor:"pointer",borderBottom:"1px solid rgba(212,168,50,.18)"}} onClick={()=>setSummOpen(!summOpen)}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:18}}>💰</span>
+                    <div>
+                      <div className="serif" style={{fontSize:17,color:"#D4A832"}}>Funding Summary — {stateName}</div>
+                      <div style={{fontSize:12,color:"#7A8A9A",fontFamily:"'DM Sans',sans-serif",marginTop:1}}>Maximum potential available if all applicable programs are pursued</div>
+                    </div>
+                  </div>
+                  <div style={{color:"#D4A832",fontSize:18}}>{summOpen?"▲":"▼"}</div>
+                </div>
+                {summOpen&&(
+                  <div style={{padding:"4px 0"}}>
+                    {/* State programs */}
+                    {statePrograms.length>0&&(
+                      <>
+                        <div style={{padding:"10px 18px 4px",display:"flex",alignItems:"center",gap:7}}>
+                          <span className="state-pill" style={{fontSize:10}}>📍 {selectedState}</span>
+                          <span style={{fontSize:11,color:"#3A5060",fontFamily:"'DM Sans',sans-serif"}}>State Programs</span>
+                        </div>
+                        {statePrograms.map(p=>(
+                          <div key={p.id} className="sum-row">
+                            <div style={{flex:1}}>
+                              <div style={{fontSize:13,color:"#C0D0DC",fontFamily:"'DM Sans',sans-serif",lineHeight:1.3}}>{p.name}</div>
+                              <div style={{fontSize:10,color:"#3A5060",fontFamily:"'DM Sans',sans-serif",marginTop:1}}>{p.valueBasis}</div>
+                            </div>
+                            <div style={{textAlign:"right",paddingLeft:12}}>
+                              <div style={{fontWeight:700,color:"#5BAA72",fontSize:14,fontFamily:"'DM Sans',sans-serif"}}>{fmt(p.calcMax)}</div>
+                              {p.url&&<a href={p.url} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#4A7A8A",fontFamily:"'DM Sans',sans-serif",textDecoration:"none"}} onClick={e=>e.stopPropagation()}>Start →</a>}
+                            </div>
+                          </div>
+                        ))}
+                        <div className="sum-sub" style={{background:"rgba(91,170,114,.1)",border:"1px solid rgba(91,170,114,.2)",margin:"4px 12px 8px"}}>
+                          <span style={{fontSize:13,fontWeight:700,color:"#5BAA72",fontFamily:"'DM Sans',sans-serif"}}>📍 {stateName} State Subtotal</span>
+                          <span style={{fontSize:18,fontWeight:900,color:"#5BAA72",fontFamily:"'DM Sans',sans-serif"}}>{fmt(stateTotal)}</span>
+                        </div>
+                      </>
+                    )}
+                    {/* Federal programs */}
+                    {federalPrograms.length>0&&(
+                      <>
+                        <div style={{padding:"8px 18px 4px",display:"flex",alignItems:"center",gap:7}}>
+                          <span className="badge fed-pill" style={{fontSize:10,margin:0}}>🏛 Federal</span>
+                          <span style={{fontSize:11,color:"#3A5060",fontFamily:"'DM Sans',sans-serif"}}>& National Programs</span>
+                        </div>
+                        {federalPrograms.map(p=>(
+                          <div key={p.id} className="sum-row">
+                            <div style={{flex:1}}>
+                              <div style={{fontSize:13,color:"#C0D0DC",fontFamily:"'DM Sans',sans-serif",lineHeight:1.3}}>{p.name}</div>
+                              <div style={{fontSize:10,color:"#3A5060",fontFamily:"'DM Sans',sans-serif",marginTop:1}}>{p.valueBasis}</div>
+                            </div>
+                            <div style={{textAlign:"right",paddingLeft:12}}>
+                              <div style={{fontWeight:700,color:p.calcMax>0?"#6B9EC7":"#3A5060",fontSize:14,fontFamily:"'DM Sans',sans-serif"}}>{p.calcMax>0?fmt(p.calcMax):"—"}</div>
+                              {p.url&&<a href={p.url} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#4A7A8A",fontFamily:"'DM Sans',sans-serif",textDecoration:"none"}} onClick={e=>e.stopPropagation()}>Start →</a>}
+                            </div>
+                          </div>
+                        ))}
+                        <div className="sum-sub" style={{background:"rgba(107,158,199,.1)",border:"1px solid rgba(107,158,199,.2)",margin:"4px 12px 8px"}}>
+                          <span style={{fontSize:13,fontWeight:700,color:"#6B9EC7",fontFamily:"'DM Sans',sans-serif"}}>🏛 Federal &amp; National Subtotal</span>
+                          <span style={{fontSize:18,fontWeight:900,color:"#6B9EC7",fontFamily:"'DM Sans',sans-serif"}}>{fmt(fedTotal)}</span>
+                        </div>
+                      </>
+                    )}
+                    {/* Grand total */}
+                    <div className="sum-total" style={{background:"linear-gradient(135deg,rgba(212,168,50,.15),rgba(212,168,50,.05))",borderTop:"2px solid rgba(212,168,50,.3)",margin:0}}>
+                      <div>
+                        <div className="serif" style={{fontSize:16,color:"#D4A832"}}>Total Potential Available</div>
+                        <div style={{fontSize:11,color:"#7A8A70",fontFamily:"'DM Sans',sans-serif",marginTop:2}}>Theoretical maximum if all applicable programs are pursued · Values are per-program caps or typical maximums · Actual awards depend on eligibility</div>
+                      </div>
+                      <div style={{textAlign:"right",flexShrink:0,paddingLeft:16}}>
+                        <div style={{fontSize:"clamp(24px,4vw,34px)",fontWeight:900,color:"#D4A832",lineHeight:1,fontFamily:"'DM Sans',sans-serif"}}>{fmt(grandTotal)}</div>
+                        <div style={{fontSize:11,color:"#7A8A70",fontFamily:"'DM Sans',sans-serif"}}>State + Federal</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── REQUIREMENTS & NEXT STEPS ── */}
+            <div style={{marginTop:20,border:"1.5px solid rgba(212,168,50,.18)",borderRadius:14,overflow:"hidden"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px",background:"rgba(212,168,50,.06)",cursor:"pointer",borderBottom:reqOpen?"1px solid rgba(212,168,50,.14)":"none"}} onClick={()=>setReqOpen(!reqOpen)}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:18}}>📋</span>
+                  <div>
+                    <div className="serif" style={{fontSize:17,color:"#D4A832"}}>Requirements &amp; What To Do Next</div>
+                    <div style={{fontSize:12,color:"#7A8A9A",fontFamily:"'DM Sans',sans-serif",marginTop:1}}>Common eligibility requirements · Prioritized action sequence</div>
+                  </div>
+                </div>
+                <div style={{color:"#D4A832",fontSize:18}}>{reqOpen?"▲":"▼"}</div>
+              </div>
+              {reqOpen&&(
+                <div style={{padding:"18px 18px 4px"}}>
+                  {/* Requirements */}
+                  <div className="cn" style={{marginBottom:11}}>COMMON ELIGIBILITY REQUIREMENTS (ACROSS MOST PROGRAMS)</div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:8,marginBottom:20}}>
+                    {BASIC_REQUIREMENTS.map((r,i)=>(
+                      <div key={i} className="req-row">
+                        <span style={{fontSize:20,flexShrink:0}}>{r.icon}</span>
+                        <div>
+                          <div style={{fontSize:13,fontWeight:600,color:"#E0D8C8",fontFamily:"'DM Sans',sans-serif",marginBottom:2}}>{r.req}</div>
+                          <div style={{fontSize:11,color:"#5A7A8A",fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>{r.detail}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Next Steps */}
+                  <div className="cn" style={{marginBottom:11}}>YOUR PRIORITIZED ACTION SEQUENCE{selectedState?` — ${stateName.toUpperCase()}`:""}</div>
+                  {NEXT_STEPS.map((s,i)=>(
+                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" className="ns-row" style={{borderColor:i===0?"rgba(212,168,50,.35)":i<2?"rgba(91,170,114,.25)":"rgba(255,255,255,.07)"}}>
+                      <div style={{width:32,height:32,borderRadius:"50%",background:i===0?"rgba(212,168,50,.2)":i<2?"rgba(91,170,114,.15)":"rgba(107,158,199,.12)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontFamily:"'DM Sans',sans-serif",fontWeight:800,fontSize:13,color:i===0?"#D4A832":i<2?"#5BAA72":"#6B9EC7"}}>{i+1}</div>
+                      <div style={{flex:1}}>
+                        <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
+                          <span style={{fontSize:13,fontWeight:700,color:"#E0D8C8",fontFamily:"'DM Sans',sans-serif"}}>{s.action}</span>
+                          <span className="badge" style={{background:s.priority==="This Week"?"rgba(212,168,50,.15)":s.priority==="This Month"?"rgba(91,170,114,.12)":"rgba(107,158,199,.1)",color:s.priority==="This Week"?"#D4A832":s.priority==="This Month"?"#5BAA72":"#6B9EC7",border:"none",margin:0,fontSize:9}}>{s.priority}</span>
+                        </div>
+                        <div style={{fontSize:12,color:"#5A7A8A",fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>{s.detail}</div>
+                        <div style={{fontSize:10,color:"#4A6A7A",marginTop:3,fontFamily:"'DM Sans',sans-serif"}}>🔗 {s.url.replace("https://","")}</div>
+                      </div>
+                      <div style={{color:"#4A6A7A",fontSize:14,flexShrink:0,alignSelf:"center"}}>↗</div>
+                    </a>
+                  ))}
+                  <div style={{paddingBottom:18}}/>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
         {/* ═══ CALCULATOR ═══ */}
         {tab==="calculator"&&(
           <div>
-            {selectedLoc?(
-              <div style={{background:"rgba(91,170,114,.08)",border:"1.5px solid rgba(91,170,114,.25)",borderRadius:9,padding:"10px 15px",marginBottom:16,display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:16}}>📍</span>
-                <span style={{fontSize:13,color:"#8BB5A0",fontFamily:"'DM Sans',sans-serif"}}>Calculating for <strong style={{color:"#F0E8D4"}}>{selectedLoc.brand}</strong> — {selectedLoc.city}, {selectedLoc.state} · {selectedLoc.specialty.join(", ")}</span>
-              </div>
-            ):(
-              <div style={{background:"rgba(212,168,50,.06)",border:"1.5px solid rgba(212,168,50,.2)",borderRadius:9,padding:"10px 15px",marginBottom:16,display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:14}}>💡</span>
-                <span style={{fontSize:13,color:"#C0A870",fontFamily:"'DM Sans',sans-serif"}}>Tip: Select a location on the Programs tab for state-specific credit suggestions.</span>
-              </div>
-            )}
+            {selectedLoc?<div style={{background:"rgba(91,170,114,.08)",border:"1.5px solid rgba(91,170,114,.25)",borderRadius:9,padding:"10px 15px",marginBottom:16,display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:16}}>📍</span><span style={{fontSize:13,color:"#8BB5A0",fontFamily:"'DM Sans',sans-serif"}}>Calculating for <strong style={{color:"#F0E8D4"}}>{selectedLoc.brand}</strong> — {selectedLoc.city}, {selectedLoc.state}</span></div>:<div style={{background:"rgba(212,168,50,.06)",border:"1.5px solid rgba(212,168,50,.2)",borderRadius:9,padding:"10px 15px",marginBottom:16,display:"flex",alignItems:"center",gap:8}}><span>💡</span><span style={{fontSize:13,color:"#C0A870",fontFamily:"'DM Sans',sans-serif"}}>Select a location on the Programs tab for state-specific credit suggestions.</span></div>}
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(290px,1fr))",gap:20}}>
-              {/* LEFT: Inputs */}
               <div>
                 <h2 className="serif" style={{fontSize:18,color:"#D4A832",marginBottom:13}}>Hire Parameters</h2>
                 <div className="crd">
                   <div style={{display:"grid",gap:12}}>
-                    {[[hires,setHires,"Number of New Hires",1,1,"number"],[wage,setWage,"Starting Hourly Wage ($)",7.25,0.25,"number"]].map(([v,s,l,mn,st,tp])=>(
-                      <div key={l}><div className="cn">{l}</div><input type={tp} className="ci" value={v} min={mn} step={st||1} onChange={e=>s(tp==="number"?(st&&st<1?parseFloat(e.target.value)||mn:Math.max(mn,parseInt(e.target.value)||mn)):e.target.value)}/></div>
-                    ))}
+                    <div><div className="cn">Number of New Hires</div><input type="number" className="ci" value={hires} min={1} onChange={e=>setHires(Math.max(1,parseInt(e.target.value)||1))}/></div>
+                    <div><div className="cn">Starting Hourly Wage ($)</div><input type="number" className="ci" value={wage} min={7.25} step={0.25} onChange={e=>setWage(parseFloat(e.target.value)||15)}/></div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                       <div><div className="cn">Hours/Week</div><input type="number" className="ci" value={hrs} min={1} max={60} onChange={e=>setHrs(parseInt(e.target.value)||40)}/></div>
                       <div><div className="cn">Training Weeks</div><input type="number" className="ci" value={weeks} min={1} onChange={e=>setWeeks(parseInt(e.target.value)||8)}/></div>
                     </div>
                     <div><div className="cn">Corp. Tax Rate (%)</div><input type="number" className="ci" value={txR} min={1} max={50} onChange={e=>setTxR(parseInt(e.target.value)||25)}/></div>
                   </div>
-                  <div style={{fontSize:11,color:"#2A4050",marginTop:9,fontFamily:"'DM Sans',sans-serif"}}>1st-yr wage: {fmt(annWage)} · Training wages: {fmt(trnWages)}</div>
+                  <div style={{fontSize:11,color:"#2A4050",marginTop:9,fontFamily:"'DM Sans',sans-serif"}}>1st-yr wage: ${(wage*hrs*52).toLocaleString()} · Training wages: ${(wage*hrs*weeks).toLocaleString()}</div>
                 </div>
-
                 <h2 className="serif" style={{fontSize:18,color:"#D4A832",marginBottom:13}}>WOTC Tax Credit</h2>
                 <div className="crd">
                   <div style={{marginBottom:11}}><div className="cn">Employee Category</div>
@@ -539,17 +720,16 @@ function App(){
                       {WOTC_CATEGORIES.map((c,i)=><option key={i} value={i}>{c.label} (max ${c.maxCredit.toLocaleString()})</option>)}
                     </select>
                   </div>
-                  <div><div className="cn">% of This Hire Class in This Category</div><input type="number" className="ci" value={wotcPct} min={0} max={100} onChange={e=>setWotcPct(parseInt(e.target.value)||0)}/></div>
+                  <div><div className="cn">% of Hires in This WOTC Category</div><input type="number" className="ci" value={wotcPct} min={0} max={100} onChange={e=>setWotcPct(parseInt(e.target.value)||0)}/></div>
                 </div>
-
                 <h2 className="serif" style={{fontSize:18,color:"#D4A832",marginBottom:13}}>Programs to Stack</h2>
                 <div className="crd">
                   {[
-                    {on:ojt,set:setOjt,label:"OJT Wage Reimbursement (WIOA)",sub:"50–75% of training wages for new hires",extra:ojt&&<div style={{paddingLeft:52,marginBottom:10}}><div className="cn">Reimbursement %</div><input type="number" className="ci" value={ojtP} min={0} max={75} onChange={e=>setOjtP(parseInt(e.target.value)||50)}/><div style={{fontSize:11,color:"#2A4050",marginTop:3,fontFamily:"'DM Sans',sans-serif"}}>Max 75% for smaller employers</div></div>},
-                    {on:iwt,set:setIwt,label:"Incumbent Worker Training Grant",sub:"Upskill existing technicians (NATE, EPA 608…)",extra:iwt&&<div style={{paddingLeft:52,display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginBottom:10}}><div><div className="cn">Cost/Employee ($)</div><input type="number" className="ci" value={iwtC} onChange={e=>setIwtC(parseInt(e.target.value)||0)}/></div><div><div className="cn">Reimbursement %</div><input type="number" className="ci" value={iwtP} min={0} max={90} onChange={e=>setIwtP(parseInt(e.target.value)||50)}/></div></div>},
-                    {on:appr,set:setAppr,label:"Registered Apprenticeship Grant",sub:"~$2,000/apprentice federal base + state credits"},
-                    {on:stateC,set:setStateC,label:`State Apprenticeship Credit${selectedState?" ("+selectedState+")":""}`,sub:"Enter your state's credit amount below",extra:stateC&&<div style={{paddingLeft:52,marginBottom:10}}><div className="cn">State Credit per Apprentice ($)</div><input type="number" className="ci" value={stateA} onChange={e=>setStateA(parseInt(e.target.value)||0)}/><div style={{fontSize:11,color:"#2A4050",marginTop:3,fontFamily:"'DM Sans',sans-serif"}}>PA: $2,500 · NY: $5,000 · NJ: $5,000 · IL: $2,500 · OH: $2,000+</div></div>},
-                    {on:s127,set:setS127,label:"§127 Educational Assistance Tax Savings",sub:"Tax-free tuition, certs, coursework up to $5,250/yr",extra:s127&&<div style={{paddingLeft:52,marginBottom:10}}><div className="cn">Annual Benefit/Employee (max $5,250)</div><input type="number" className="ci" value={s127A} min={0} max={5250} onChange={e=>setS127A(Math.min(5250,parseInt(e.target.value)||0))}/></div>}
+                    {on:ojt,set:setOjt,label:"OJT Wage Reimbursement (WIOA)",sub:"50–75% of training wages",extra:ojt&&<div style={{paddingLeft:52,marginBottom:10}}><div className="cn">Reimbursement %</div><input type="number" className="ci" value={ojtP} min={0} max={75} onChange={e=>setOjtP(parseInt(e.target.value)||50)}/></div>},
+                    {on:iwt,set:setIwt,label:"Incumbent Worker Training Grant",sub:"Upskill existing technicians",extra:iwt&&<div style={{paddingLeft:52,display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginBottom:10}}><div><div className="cn">Cost/Employee ($)</div><input type="number" className="ci" value={iwtC} onChange={e=>setIwtC(parseInt(e.target.value)||0)}/></div><div><div className="cn">Reimbursement %</div><input type="number" className="ci" value={iwtP} min={0} max={90} onChange={e=>setIwtP(parseInt(e.target.value)||50)}/></div></div>},
+                    {on:appr,set:setAppr,label:"Registered Apprenticeship Grant",sub:"~$2,000/apprentice federal base"},
+                    {on:stateC,set:setStateC,label:`State Apprenticeship Credit${selectedState?" ("+selectedState+")":""}`,sub:"Enter your state credit below",extra:stateC&&<div style={{paddingLeft:52,marginBottom:10}}><div className="cn">State Credit per Apprentice ($)</div><input type="number" className="ci" value={stateA} onChange={e=>setStateA(parseInt(e.target.value)||0)}/><div style={{fontSize:11,color:"#2A4050",marginTop:3,fontFamily:"'DM Sans',sans-serif"}}>PA: $2,500 · NY: $5,000 · NJ: $5,000 · IL: $2,500 · OH: $2,000+</div></div>},
+                    {on:s127,set:setS127,label:"§127 Educational Assistance",sub:"Tax-free certs/tuition up to $5,250/yr",extra:s127&&<div style={{paddingLeft:52,marginBottom:10}}><div className="cn">Annual Benefit/Employee (max $5,250)</div><input type="number" className="ci" value={s127A} min={0} max={5250} onChange={e=>setS127A(Math.min(5250,parseInt(e.target.value)||0))}/></div>}
                   ].map(({on,set,label,sub,extra},i)=>(
                     <div key={i} style={{marginBottom:extra?0:10}}>
                       <div style={{display:"flex",alignItems:"center",gap:11,marginBottom:6}}>
@@ -561,30 +741,33 @@ function App(){
                   ))}
                 </div>
               </div>
-
-              {/* RIGHT: Results */}
               <div>
-                <h2 className="serif" style={{fontSize:18,color:"#D4A832",marginBottom:13}}>Estimated Annual Savings</h2>
+                <h2 className="serif" style={{fontSize:18,color:"#D4A832",marginBottom:13}}>Estimated Savings</h2>
                 <div style={{background:"linear-gradient(135deg,rgba(212,168,50,.18),rgba(212,168,50,.06))",border:"2.5px solid #D4A832",borderRadius:15,padding:"24px 20px",textAlign:"center",marginBottom:15}}>
                   <div className="cn" style={{marginBottom:7}}>Total Estimated Offset</div>
                   <div style={{fontSize:"clamp(38px,7vw,56px)",fontWeight:900,color:"#D4A832",letterSpacing:"-.02em",lineHeight:1,fontFamily:"'DM Sans',sans-serif"}}>{fmt(total)}</div>
-                  <div style={{fontSize:12,color:"#5A7A8A",marginTop:6,fontFamily:"'DM Sans',sans-serif"}}>across {hires} new hire{hires!==1?"s":""}</div>
+                  <div style={{fontSize:12,color:"#5A7A8A",marginTop:6,fontFamily:"'DM Sans',sans-serif"}}>across {hires} hire{hires!==1?"s":""}</div>
                   {hires>0&&<div style={{fontSize:16,color:"#C0D0DC",marginTop:8,fontWeight:600,fontFamily:"'DM Sans',sans-serif"}}>{fmt(total/hires)} avg per hire</div>}
                 </div>
-
                 <div className="crd">
                   <div className="cn" style={{marginBottom:11}}>Breakdown</div>
                   {[
-                    {l:"WOTC Tax Credit",sub:`${wotcPct}% of hires · ${WOTC_CATEGORIES[wotcCat].label.split("(")[0].trim()}`,v:wotcV,c:"#D4A832"},
-                    ojt?{l:"OJT Wage Reimbursement",sub:`${ojtP}% × ${weeks} wks × ${hires} hires`,v:ojtV,c:"#6B9EC7"}:null,
-                    iwt?{l:"Incumbent Worker Training",sub:`${iwtP}% of $${iwtC.toLocaleString()} × ${hires}`,v:iwtV,c:"#A07CC5"}:null,
-                    appr?{l:"Apprenticeship Grant (base)",sub:`$2,000 × ${hires}`,v:apprV,c:"#5BAA72"}:null,
-                    stateC?{l:`State Credit${selectedState?" ("+selectedState+")":""}`,sub:`$${stateA.toLocaleString()} × ${hires}`,v:stateV,c:"#5BAA72"}:null,
-                    s127?{l:"§127 Tax Savings",sub:`${txR}% rate × $${Math.min(s127A,5250).toLocaleString()} × ${hires}`,v:s127V,c:"#8BB5A0"}:null
+                    {l:"WOTC Tax Credit",sub:`${wotcPct}% · ${WOTC_CATEGORIES[wotcCat].label.split("(")[0].trim()}`,v:wotcV,c:"#D4A832",url:"https://www.dol.gov/agencies/eta/wotc"},
+                    ojt?{l:"OJT Wage Reimbursement",sub:`${ojtP}% × ${weeks} wks × ${hires}`,v:ojtV,c:"#6B9EC7",url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx"}:null,
+                    iwt?{l:"Incumbent Worker Training",sub:`${iwtP}% of $${iwtC.toLocaleString()} × ${hires}`,v:iwtV,c:"#A07CC5",url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx"}:null,
+                    appr?{l:"Apprenticeship Grant (base)",sub:`$2,000 × ${hires}`,v:apprV,c:"#5BAA72",url:"https://www.apprenticeship.gov/employers/registered-apprenticeship-program"}:null,
+                    stateC?{l:`State Credit${selectedState?" ("+selectedState+")":""}`,sub:`$${stateA.toLocaleString()} × ${hires}`,v:stateV,c:"#5BAA72",url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx"}:null,
+                    s127?{l:"§127 Tax Savings",sub:`${txR}% rate × $${Math.min(s127A,5250).toLocaleString()} × ${hires}`,v:s127V,c:"#8BB5A0",url:"https://www.irs.gov/publications/p15-b"}:null
                   ].filter(Boolean).map((r,i)=>(
                     <div key={i} className="rr">
-                      <div><div style={{fontSize:13,color:"#C0D0DC",fontFamily:"'DM Sans',sans-serif"}}>{r.l}</div><div style={{fontSize:11,color:"#2A4050",fontFamily:"'DM Sans',sans-serif"}}>{r.sub}</div></div>
-                      <div style={{fontWeight:800,color:r.c,fontSize:15,flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>{fmt(r.v)}</div>
+                      <div>
+                        <div style={{fontSize:13,color:"#C0D0DC",fontFamily:"'DM Sans',sans-serif"}}>{r.l}</div>
+                        <div style={{fontSize:11,color:"#2A4050",fontFamily:"'DM Sans',sans-serif"}}>{r.sub}</div>
+                      </div>
+                      <div style={{display:"flex",alignItems:"center",gap:8}}>
+                        <div style={{fontWeight:800,color:r.c,fontSize:15,fontFamily:"'DM Sans',sans-serif"}}>{fmt(r.v)}</div>
+                        {r.url&&<a href={r.url} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#4A6A7A",textDecoration:"none",border:"1px solid rgba(107,158,199,.2)",borderRadius:4,padding:"2px 6px",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>Apply →</a>}
+                      </div>
                     </div>
                   ))}
                   <div style={{borderTop:"2px solid rgba(212,168,50,.22)",marginTop:5,paddingTop:10,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -592,28 +775,27 @@ function App(){
                     <div style={{fontSize:24,fontWeight:900,color:"#D4A832",fontFamily:"'DM Sans',sans-serif"}}>{fmt(total)}</div>
                   </div>
                 </div>
-
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
-                  {[{l:"Gross 1st-Yr",v:fmt(annWage),c:"#C07A5A"},{l:"Offset/Hire",v:fmt(total/Math.max(hires,1)),c:"#5BAA72"},{l:"Net 1st-Yr",v:fmt(Math.max(0,annWage-total/Math.max(hires,1))),c:"#6B9EC7"}].map(x=>(
+                  {[{l:"Gross 1st-Yr",v:fmt(wage*hrs*52),c:"#C07A5A"},{l:"Offset/Hire",v:fmt(total/Math.max(hires,1)),c:"#5BAA72"},{l:"Net 1st-Yr",v:fmt(Math.max(0,(wage*hrs*52)-total/Math.max(hires,1))),c:"#6B9EC7"}].map(x=>(
                     <div key={x.l} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(212,168,50,.1)",borderRadius:9,padding:"11px 8px",textAlign:"center"}}>
                       <div className="cn" style={{fontSize:9}}>{x.l}</div>
                       <div style={{fontSize:14,fontWeight:800,color:x.c,fontFamily:"'DM Sans',sans-serif"}}>{x.v}</div>
                     </div>
                   ))}
                 </div>
-
                 <div style={{background:"rgba(120,181,216,.07)",border:"1.5px solid rgba(120,181,216,.2)",borderRadius:9,padding:14,marginBottom:11}}>
-                  <div className="cn" style={{color:"#78B5D8",marginBottom:5}}>🎖 Add GI Bill / SkillBridge (not in calculator above)</div>
-                  <div style={{fontSize:12,color:"#6A8AA0",lineHeight:1.75,fontFamily:"'DM Sans',sans-serif"}}>
-                    <strong style={{color:"#C0D0DC"}}>Post-9/11 GI Bill Apprentice:</strong> VA pays $1,800–$2,717/month directly to the veteran — ON TOP of their Sila wage. Zero extra cost to employer.<br/>
-                    <strong style={{color:"#C0D0DC"}}>DOD SkillBridge:</strong> DOD pays the active-duty member's full military salary during their 4–6 month apprenticeship. Employer labor cost: <strong style={{color:"#5BAA72"}}>$0</strong>.
+                  <div className="cn" style={{color:"#78B5D8",marginBottom:5}}>🎖 GI Bill / SkillBridge (not in calculator)</div>
+                  <div style={{fontSize:12,color:"#6A8AA0",lineHeight:1.75,fontFamily:"'DM Sans',sans-serif",marginBottom:8}}>
+                    <strong style={{color:"#C0D0DC"}}>GI Bill Apprentice:</strong> VA pays $1,800–$2,717/mo to veteran — ON TOP of Sila wage. Employer cost: $0.<br/>
+                    <strong style={{color:"#C0D0DC"}}>SkillBridge:</strong> DOD pays active-duty member's full salary for 4-6 months. Employer cost: <strong style={{color:"#5BAA72"}}>$0</strong>.
+                  </div>
+                  <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                    <a href="https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/" target="_blank" rel="noopener noreferrer" className="url-btn" style={{fontSize:11,padding:"5px 10px"}}>GI Bill Employer Approval ↗</a>
+                    <a href="https://skillbridge.defense.gov/Employers/Enrollment-Process.htm" target="_blank" rel="noopener noreferrer" className="url-btn" style={{fontSize:11,padding:"5px 10px"}}>SkillBridge Register ↗</a>
                   </div>
                 </div>
-
                 <div style={{background:"rgba(91,170,114,.06)",border:"1.5px solid rgba(91,170,114,.18)",borderRadius:9,padding:12}}>
-                  <div style={{fontSize:12,color:"#6A8A78",lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>
-                    <strong style={{color:"#5BAA72"}}>⚠ Planning Estimate Only.</strong> Actual benefits depend on eligibility determinations, state-specific rules, program availability, and timing. Verify with a workforce development specialist or CPA.
-                  </div>
+                  <div style={{fontSize:11,color:"#5A7A6A",lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}><strong style={{color:"#5BAA72"}}>⚠ Planning Estimate Only.</strong> Actual benefits depend on eligibility, state-specific rules, and program availability. Verify with a workforce development specialist or CPA.</div>
                 </div>
               </div>
             </div>
@@ -623,87 +805,50 @@ function App(){
         {/* ═══ LEGISLATION ═══ */}
         {tab==="acts"&&(
           <div>
-            <p style={{fontSize:13,color:"#4A6A7A",marginBottom:18,lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>Federal legislation and executive orders authorizing workforce training incentives for trades employers. Understanding the statutory basis strengthens grant applications and internal business cases.</p>
+            <p style={{fontSize:13,color:"#4A6A7A",marginBottom:18,lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>Federal legislation and executive orders authorizing workforce training incentives for trades employers.</p>
             {ACTS.map((a,i)=>(
               <div key={i} className="act-card" style={{borderLeft:`3.5px solid ${a.highlight?"#E8A020":"#D4A832"}`}}>
                 <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,marginBottom:7}}>
                   <div style={{flex:1}}>
-                    <div style={{fontSize:15,fontWeight:600,color:"#F0E8D4",lineHeight:1.3,fontFamily:"'DM Sans',sans-serif"}}>{a.name}</div>
+                    <div style={{fontSize:15,fontWeight:600,color:"#F0E8D4",fontFamily:"'DM Sans',sans-serif",lineHeight:1.3}}>{a.name}</div>
                     <div style={{fontSize:11,color:"#2A4050",marginTop:2,fontFamily:"'DM Sans',sans-serif"}}>{typeof a.year==="number"?`Enacted ${a.year}`:`Updated ${a.year}`} · {a.agency}</div>
                   </div>
                   {a.highlight?<span className="badge eo-pill">⚡ Active Priority</span>:<span className="badge" style={{background:"rgba(212,168,50,.1)",color:"#D4A832",border:"1px solid rgba(212,168,50,.25)",height:"fit-content"}}>{a.year}</span>}
                 </div>
-                <div style={{fontSize:13,color:"#7A9AB0",lineHeight:1.72,fontFamily:"'DM Sans',sans-serif"}}>{a.scope}</div>
+                <div style={{fontSize:13,color:"#7A9AB0",lineHeight:1.72,fontFamily:"'DM Sans',sans-serif",marginBottom:8}}>{a.scope}</div>
+                {a.url&&<a href={a.url} target="_blank" rel="noopener noreferrer" className="url-btn" style={{fontSize:11,padding:"5px 11px"}}>🔗 Official Source ↗</a>}
               </div>
             ))}
-            <div style={{marginTop:22,background:"rgba(212,168,50,.05)",border:"1.5px solid rgba(212,168,50,.17)",borderRadius:11,padding:18}}>
-              <div className="cn" style={{marginBottom:10}}>VERSION HISTORY</div>
-              {KB_VERSION_HISTORY.map((v,i)=>(
-                <div key={i} style={{display:"flex",gap:11,alignItems:"baseline",marginBottom:6,flexWrap:"wrap"}}>
-                  <span className="badge" style={{background:"rgba(212,168,50,.1)",color:"#D4A832",border:"1px solid rgba(212,168,50,.25)"}}>{v.v}</span>
-                  <span style={{fontSize:12,color:"#2A4050",fontFamily:"'DM Sans',sans-serif"}}>{v.date}</span>
-                  <span style={{fontSize:12,color:"#7A8AA0",fontFamily:"'DM Sans',sans-serif"}}>{v.notes}</span>
-                </div>
-              ))}
-            </div>
           </div>
         )}
 
         {/* ═══ AGENCIES ═══ */}
         {tab==="agencies"&&(
           <div>
-            <p style={{fontSize:13,color:"#4A6A7A",marginBottom:18,lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>Federal, state, and industry agencies administering training incentives for trades employers. Each is a potential partner, funder, or compliance authority for Sila brands.</p>
+            <p style={{fontSize:13,color:"#4A6A7A",marginBottom:18,lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>Federal, state, and industry agencies administering training incentives. Each is a potential partner, funder, or compliance authority.</p>
             {AGENCIES.map((a,i)=>(
               <div key={i} className="ag-card">
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:12,flexWrap:"wrap",marginBottom:6}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:12,flexWrap:"wrap",marginBottom:7}}>
                   <div>
                     <div style={{fontSize:14,fontWeight:600,color:"#F0E8D4",fontFamily:"'DM Sans',sans-serif"}}>{a.name}</div>
                     <div style={{fontSize:11,color:"#D4A832",marginTop:1,fontFamily:"'DM Sans',sans-serif"}}>{a.dept}</div>
                   </div>
-                  <a href={a.url} target="_blank" rel="noopener noreferrer"
-                    style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#6B9EC7",textDecoration:"none",border:"1px solid rgba(107,158,199,.28)",borderRadius:5,padding:"4px 10px",whiteSpace:"nowrap",flexShrink:0}}>
-                    ↗ {a.url.replace("https://","")}
-                  </a>
+                  <a href={a.url} target="_blank" rel="noopener noreferrer" className="url-btn" style={{fontSize:11,padding:"5px 10px"}}>🔗 {a.url.replace("https://","").split("/")[0]} ↗</a>
                 </div>
                 <div style={{fontSize:13,color:"#6A8AAA",lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>{a.role}</div>
               </div>
             ))}
-
-            <div style={{marginTop:22,background:"rgba(212,168,50,.05)",border:"1.5px solid rgba(212,168,50,.2)",borderRadius:12,padding:20}}>
-              <div style={{fontSize:15,fontWeight:700,color:"#D4A832",marginBottom:14,fontFamily:"'DM Sans',sans-serif"}}>📋 Priority Action Sequence — L&amp;D Playbook</div>
-              {[
-                ["1. Register Apprenticeship NOW","Fastest action under the Trump EO. Go to apprenticeship.gov. Unlocks WOTC stacking, state credits, GI Bill eligibility, and IRA bonus credits simultaneously. Takes 4-6 weeks — start today."],
-                ["2. Contact Your Local American Job Center","Execute OJT agreements BEFORE your next new hire. Retroactive claims are not allowed. Find your AJC at careeronestop.org."],
-                ["3. Assign a WOTC Owner","Form 8850 must be filed within 28 days of each eligible hire. Assign someone to own this process — missed deadlines forfeit the credit permanently."],
-                ["4. Register for DOD SkillBridge","skillbridge.defense.gov. Post apprenticeship slots. Receive active-duty candidates at zero labor cost within 60 days of setup."],
-                ["5. Ohio TechCred — Apply Every Quarter","techcred.ohio.gov. With 6 OH brands and 250+ employees, Ohio TechCred quarterly applications are a recurring high-value action ($30,000/brand/round for NATE, EPA 608, building automation credentials)."],
-                ["6. Michigan Going PRO — Spring Application","Carter's Plumbing and Levine & Sons: apply every spring at michigan.gov/leo. Up to $900,000 per employer project. High ROI application."],
-                ["7. Coordinate MA Workforce Training Fund","All MA brands (Boston Standard, Central Cooling, N.E.T.R., Nashoba, TriState, Sila Stoneham) should coordinate a single $250,000 WTFP application at workforcetrainingfund.org."],
-                ["8. Set Up §127 Educational Assistance Plan","One-time legal plan document (any employment attorney, ~$1-2K). Immediately begin offering NATE/EPA 608/community college coverage tax-free to all technicians."]
-              ].map(([title,body],i)=>(
-                <div key={i} style={{marginBottom:13,paddingLeft:0}}>
-                  <div style={{fontSize:13,fontWeight:700,color:"#E2D9C5",marginBottom:3,fontFamily:"'DM Sans',sans-serif"}}>{title}</div>
-                  <div style={{fontSize:12,color:"#7A8AAA",lineHeight:1.72,fontFamily:"'DM Sans',sans-serif"}}>{body}</div>
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </div>
 
       {/* Footer */}
       <div style={{textAlign:"center",padding:"13px 16px 26px",borderTop:"1px solid rgba(212,168,50,.08)"}}>
-        <div style={{fontSize:10,color:"#1A2E3A",letterSpacing:".08em",fontFamily:"'DM Sans',sans-serif"}}>
-          SILA SERVICES · L&amp;D TRAINING INCENTIVES NAVIGATOR · {KB_LAST_UPDATED} · CONFIDENTIAL — INTERNAL USE ONLY
-        </div>
-        <div style={{fontSize:10,color:"#1A2E3A",marginTop:2,fontFamily:"'DM Sans',sans-serif"}}>
-          {SILA_LOCATIONS.length} brands · {Object.keys(STATE_NAMES).length} states · {PROGRAMS.length} programs tracked · Goldman Sachs Alternatives PE
-        </div>
+        <div style={{fontSize:10,color:"#1A2E3A",letterSpacing:".08em",fontFamily:"'DM Sans',sans-serif"}}>SILA SERVICES · L&amp;D TRAINING INCENTIVES NAVIGATOR · {KB_LAST_UPDATED} · CONFIDENTIAL — INTERNAL USE ONLY</div>
+        <div style={{fontSize:10,color:"#1A2E3A",marginTop:2,fontFamily:"'DM Sans',sans-serif"}}>{SILA_LOCATIONS.length} brands · 15 states · {PROGRAMS.length} programs · Goldman Sachs Alternatives PE</div>
       </div>
     </div>
   );
 }
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
-</script>
-</body>
-</html>
+</script></body></html>
