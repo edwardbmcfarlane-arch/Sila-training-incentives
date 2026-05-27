@@ -305,13 +305,118 @@ const BASIC_REQUIREMENTS=[
   {icon:"🏛",req:"No outstanding federal or state tax liens",detail:"Most programs require good standing with taxing authorities. Resolve any outstanding obligations before applying."},
 ];
 const NEXT_STEPS=[
-  {priority:"This Week",action:"Register your in-house apprenticeship at apprenticeship.gov",detail:"Takes ~2 hours online. Formalizes what Sila already does and unlocks WOTC, state credits, GI Bill eligibility, and IRA bonus credits simultaneously.",url:"https://www.apprenticeship.gov/employers/registered-apprenticeship-program"},
-  {priority:"This Week",action:"Contact your local American Job Center for OJT",detail:"Find your WDB at careeronestop.org. Execute an OJT agreement BEFORE your next new hire — retroactive claims are not permitted.",url:"https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx"},
-  {priority:"This Month",action:"Assign a WOTC owner — file Form 8850 within 28 days of each hire",detail:"One missed deadline forfeits the credit permanently. Assign someone to own this process for every qualifying new hire.",url:"https://www.dol.gov/agencies/eta/wotc"},
-  {priority:"This Month",action:"Register as a DOD SkillBridge employer",detail:"30 minutes at skillbridge.defense.gov. Post in-house apprenticeship slots. Receive active-duty candidates at $0 labor cost.",url:"https://skillbridge.defense.gov/Employers/Enrollment-Process.htm"},
-  {priority:"This Quarter",action:"Apply for your highest-value state program",detail:"OH: TechCred (quarterly). MI: Going PRO (spring). MA: WTFP. PA: WEDnet + Industry Partnerships. Apply for the largest direct offset in your state first.",url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx"},
-  {priority:"This Quarter",action:"Set up a §127 Educational Assistance Plan",detail:"One-time legal setup (~$1-2K). Immediately makes in-house training benefits — NATE, EPA 608, Sila University courses — tax-free for both Sila and employees.",url:"https://www.irs.gov/publications/p15-b"},
-  {priority:"Ongoing",action:"VA-approve your program for GI Bill OJT benefits",detail:"At va.gov/education — allows veteran techs to receive $1,800-$2,717/month from VA on top of their Sila in-house OJT wage. Zero cost to Sila.",url:"https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/"},
+  {
+    priority:"This Week",
+    action:"Register your in-house apprenticeship at apprenticeship.gov",
+    detail:"Takes ~2 hours online. Formalizes what Sila already does and unlocks WOTC, state credits, GI Bill eligibility, and IRA bonus credits simultaneously.",
+    url:"https://www.apprenticeship.gov/employers/registered-apprenticeship-program",
+    steps:[
+      "Go to apprenticeship.gov and click 'Register a Program' — create a free employer account",
+      "Use the Employer Toolkit questionnaire to select your trade (HVAC / Plumbing / Electrical) — pre-built frameworks are available for all three",
+      "Set OJT hour requirements: HVAC ≈ 2,000 hrs/yr over 1–2 years; Plumbing & Electrical ≈ 2,000 hrs/yr over 4–5 years",
+      "Set Related Technical Instruction (RTI) hours: minimum 144 classroom hours per year — this is what you're likely already doing in Sila University",
+      "Define a wage progression schedule (e.g. start at 50% of journeyman wage, increase 10% per year)",
+      "Submit your program to your regional DOL Office of Apprenticeship for review",
+      "Receive your Certificate of Registration — allow 4–6 weeks for approval",
+      "Once registered: enroll each individual apprentice in the system when they start"
+    ]
+  },
+  {
+    priority:"This Week",
+    action:"Contact your local American Job Center for OJT wage reimbursement",
+    detail:"Find your WDB at careeronestop.org. Execute an OJT agreement BEFORE your next new hire — retroactive claims are not permitted.",
+    url:"https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx",
+    steps:[
+      "Find your local American Job Center (AJC) at careeronestop.org — search by zip code for each Sila brand location",
+      "Call or visit: ask specifically for the 'Business Services Representative' or 'Employer Services' team",
+      "Request an OJT agreement template and program overview",
+      "CRITICAL: Sign the OJT agreement BEFORE making the qualifying hire — retroactive agreements are almost never accepted",
+      "Agree on reimbursement rate (50–75% of wages during training) and training duration (typically 8–26 weeks)",
+      "Identify qualifying candidates: WIOA-eligible workers include veterans, SNAP recipients, long-term unemployed, recent graduates",
+      "Set up a training outline documenting what skills will be taught and by whom",
+      "Submit timesheets, training logs, and payroll records on the WDB's reimbursement schedule (typically monthly or quarterly)"
+    ]
+  },
+  {
+    priority:"This Month",
+    action:"Assign a WOTC owner — file Form 8850 within 28 days of each qualifying hire",
+    detail:"One missed deadline forfeits the credit permanently. Assign someone to own this process for every qualifying new hire.",
+    url:"https://www.dol.gov/agencies/eta/wotc",
+    steps:[
+      "Designate a specific person (HR manager, office manager, or payroll admin) as WOTC compliance owner — document in writing",
+      "Download IRS Form 8850 (Pre-Screening Notice and Certification Request) from irs.gov",
+      "Add Form 8850 to every new hire onboarding packet — it must be signed on or before the employee's first day",
+      "Submit signed Form 8850 to your State Workforce Agency (SWA) within 28 days of the employee's start date — this deadline is absolute, no exceptions",
+      "Track submission confirmations — keep copies of all submitted forms and SWA receipts",
+      "Train hiring managers on the 10 WOTC target groups: veterans, SNAP recipients, ex-felons, long-term unemployed (27+ weeks), vocational rehab referrals, SSI recipients, summer youth, TANF recipients, designated community residents, and long-term TANF recipients",
+      "Once SWA certifies the hire, claim the credit by filing IRS Form 5884 with your corporate tax return",
+      "Consider using a WOTC screening vendor (e.g., ADP, Equifax Workforce Solutions) to automate if volume is high across 45 brands"
+    ]
+  },
+  {
+    priority:"This Month",
+    action:"Register as a DOD SkillBridge employer",
+    detail:"Takes ~30 minutes. Post in-house apprenticeship slots and receive pre-screened active-duty candidates at $0 labor cost for up to 6 months.",
+    url:"https://skillbridge.defense.gov/Employers/Enrollment-Process.htm",
+    steps:[
+      "Go to skillbridge.defense.gov and click 'Enroll as an Employer' — create employer profile (~30 minutes)",
+      "Describe your in-house apprenticeship program: trades, locations, what trainees will learn, typical schedule",
+      "Set how many slots are available per location (you can start with 1–2 per brand to test)",
+      "Post your opportunity — it becomes visible to active-duty service members within 180 days of separation across all branches",
+      "Review incoming candidate applications — DoD does pre-screening, you select who fits",
+      "Coordinate start date with the service member's commanding officer (CO approval is required)",
+      "During the 4–6 month program: maintain weekly performance records per DoD requirements",
+      "At program completion: evaluate the candidate for full-time hire — many SkillBridge completers convert directly"
+    ]
+  },
+  {
+    priority:"This Quarter",
+    action:"Apply for your state's highest-value training grant",
+    detail:"OH: TechCred (quarterly deadlines). MI: Going PRO (spring cycle). MA: WTFP (rolling). PA: WEDnet + Industry Partnerships. Apply for the largest direct offset in your state first.",
+    url:"https://www.careeronestop.org/BusinessCenter/TrainAndRetain/FundingEmployeeTraining/state-and-federal-grants.aspx",
+    steps:[
+      "Identify your top state program using the Programs tab — filter by your state to see amounts and deadlines",
+      "Confirm application deadlines: OH TechCred is quarterly (apply every 3 months), MI Going PRO opens in spring, MA WTFP is rolling year-round",
+      "Prepare a written in-house training plan: list specific skills, credentials being earned (NATE, EPA 608, OSHA), training hours, and instructor names",
+      "Document your training costs in writing: instructor wages, materials, curriculum costs, and employee wages paid during training hours",
+      "Complete the online application on your state workforce portal — links are in each program card on the Programs tab",
+      "If multi-brand state (PA has 9 brands, MA has 6 brands): consider a joint application across brands for larger award amounts",
+      "Track the award notification timeline (typically 60–90 days after application close)",
+      "Upon award: maintain all required documentation for reimbursement claims — timesheets, credential completion records, payroll evidence"
+    ]
+  },
+  {
+    priority:"This Quarter",
+    action:"Set up a §127 Educational Assistance Plan",
+    detail:"One-time legal setup (~$1–2K). Makes NATE, EPA 608, Sila University courses, and any in-house training benefits tax-free for both Sila and employees.",
+    url:"https://www.irs.gov/publications/p15-b",
+    steps:[
+      "Engage an employment attorney or employee benefits consultant to draft a written §127 plan document (typically $500–$2,000 one-time legal fee)",
+      "The plan must be in writing and cover all employees on a non-discriminatory basis — it cannot favor owners or highly compensated employees",
+      "Define what training qualifies: NATE prep, EPA 608, OSHA certifications, Sila University coursework, trade school courses, management training",
+      "Set the per-employee annual cap at $5,250 (the IRS maximum for tax-free treatment for both employer and employee)",
+      "Communicate the plan to all employees in writing — include it in the employee handbook",
+      "Work with payroll to process qualifying training reimbursements as non-taxable benefit payments (no income tax, no FICA on either side)",
+      "Retain the plan document on file — IRS may request it during audit to verify the exclusion",
+      "Review and update annually if you expand training offerings"
+    ]
+  },
+  {
+    priority:"Ongoing",
+    action:"VA-approve your in-house program for GI Bill OJT benefits",
+    detail:"VA pays $1,800–$2,717/month to veteran apprentices while they train in-house at Sila. Employer cost: $0. Requires one-time State Approving Agency approval.",
+    url:"https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/",
+    steps:[
+      "IMPORTANT: VA-approval happens through your State Approving Agency (SAA) — not through the VA directly. Find your SAA at benefits.va.gov/GIBILL/resources/learning_resources/state_approving_agencies.asp",
+      "Contact your SAA and request the OJT/Apprenticeship program approval application",
+      "You must have your DOL Certificate of Registration for your in-house apprenticeship BEFORE the SAA will review (complete Action #1 first)",
+      "Submit to SAA: your apprenticeship registration certificate, training plan, wage progression schedule, and a description of your program",
+      "SAA review typically takes 4–8 weeks — follow up every two weeks",
+      "Once approved: post your program at va.gov/education so veteran candidates can find it",
+      "Each veteran employee applies for benefits individually at va.gov — Sila does not apply on their behalf",
+      "Monthly: certify each veteran's training progress to the VA using VA Form 22-6553c to maintain their Monthly Housing Allowance payments"
+    ]
+  },
 ];
 
 const AGENCIES=[
@@ -400,6 +505,7 @@ function App(){
   const[reqOpen,setReqOpen]=useState(true);
   const[licOpen,setLicOpen]=useState(true);
   const[showExternal,setShowExternal]=useState(false);
+  const[openNS,setOpenNS]=useState(new Set());
   const searchRef=useRef(null);
   // calc
   const[hires,setHires]=useState(5);
@@ -598,6 +704,81 @@ ${acts.map(a=>`<tr><td>${a.name}</td><td>${a.year}</td><td style="font-size:10px
 ${AGENCIES.map(a=>`<tr><td>${a.name}</td><td style="font-size:10px;color:#555">${a.dept}</td><td style="font-size:10px;color:#333;line-height:1.5">${a.role}</td><td style="font-size:10px"><a href="${a.url}">${a.url.replace('https://','').split('/')[0]}</a></td></tr>`).join('')}
 </table>
 <p class="note">Generated by Sila Services L&D Training Incentives Navigator · ${KB_LAST_UPDATED} · CONFIDENTIAL — INTERNAL USE ONLY</p>
+</body></html>`;
+    const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+  };
+
+  const handlePrintTracker=()=>{
+    const locLine=selectedLoc?`${selectedLoc.brand} — ${selectedLoc.city}, ${selectedLoc.state}`:"All Sila Locations";
+    const priColor=p=>p==="This Week"?"#8B1A1A":p==="This Month"?"#1A5C2A":"#1A3A5C";
+    const priBg=p=>p==="This Week"?"#FFF0F0":p==="This Month"?"#F0FFF4":"#F0F4FF";
+    const html=`<!DOCTYPE html><html><head><title>Sila Training Implementation Tracker</title>
+<style>
+body{font-family:Arial,sans-serif;font-size:11px;color:#111;margin:16px;line-height:1.4}
+h1{font-size:16px;color:#1a3a5c;margin-bottom:2px}
+.sub{font-size:10px;color:#555;margin-bottom:14px}
+.action-block{border:1.5px solid #ccc;border-radius:6px;margin-bottom:14px;page-break-inside:avoid;overflow:hidden}
+.action-header{padding:10px 12px;border-bottom:1px solid #ddd;display:flex;gap:10px;align-items:flex-start}
+.num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;margin-top:1px}
+.action-title{font-size:12px;font-weight:700;color:#1a3a5c;margin-bottom:3px}
+.action-detail{font-size:10px;color:#555;line-height:1.5}
+.pri-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px;vertical-align:middle}
+.steps-area{padding:10px 12px 0}
+.step-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0}
+.step-row:last-child{border-bottom:none}
+.check-box{width:14px;height:14px;border:1.5px solid #aaa;border-radius:2px;flex-shrink:0;margin-top:1px}
+.step-num{font-weight:700;color:#1a3a5c;flex-shrink:0;font-size:10px;width:14px;text-align:right}
+.step-text{flex:1;font-size:10px;color:#333;line-height:1.5}
+.meta-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:8px 12px;background:#f8f8f8;border-top:1px solid #eee;margin-top:2px}
+.meta-label{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.meta-line{border-bottom:1.5px solid #ccc;height:18px}
+.url-ref{font-size:9px;color:#1a5c8a;padding:5px 12px 8px;border-top:1px dashed #ddd}
+.status-row{padding:6px 12px 8px;background:#f8f8f8;border-top:1px solid #eee;display:flex;gap:20px;align-items:center}
+.status-check{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700}
+.notes-area{padding:6px 12px;border-top:1px solid #eee}
+.notes-lines{border-bottom:1px solid #ddd;height:16px;margin-bottom:3px}
+.footer{font-size:9px;color:#888;margin-top:18px;border-top:1px solid #ddd;padding-top:8px;text-align:center}
+@media print{body{margin:10px}.action-block{page-break-inside:avoid}}
+</style>
+</head><body>
+<h1>Sila Services — Training Incentives Implementation Tracker</h1>
+<div class="sub">${locLine} · Generated ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} · CONFIDENTIAL — INTERNAL USE ONLY</div>
+<div style="font-size:10px;color:#555;background:#fffbe6;border:1px solid #f0c040;border-radius:4px;padding:6px 10px;margin-bottom:12px">
+  📋 <strong>How to use:</strong> Check off each sub-step as completed. Fill in Owner and Target Date for accountability. Add notes for next actions or blockers. When all sub-steps are complete, mark the action Done with the completion date.
+</div>
+
+${NEXT_STEPS.map((s,i)=>`
+<div class="action-block">
+  <div class="action-header">
+    <div class="num" style="background:${priBg(s.priority)};color:${priColor(s.priority)}">${i+1}</div>
+    <div style="flex:1">
+      <div class="action-title">${s.action}<span class="pri-badge" style="background:${priBg(s.priority)};color:${priColor(s.priority)}">${s.priority}</span></div>
+      <div class="action-detail">${s.detail}</div>
+    </div>
+  </div>
+  <div class="steps-area">
+    ${s.steps.map((st,j)=>`<div class="step-row"><div class="check-box"></div><div class="step-num">${j+1}</div><div class="step-text">${st}</div></div>`).join('')}
+  </div>
+  <div class="meta-row">
+    <div><div class="meta-label">Owner</div><div class="meta-line"></div></div>
+    <div><div class="meta-label">Target Date</div><div class="meta-line"></div></div>
+    <div><div class="meta-label">Completed Date</div><div class="meta-line"></div></div>
+  </div>
+  <div class="notes-area">
+    <div class="meta-label">Notes / Blockers</div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+  </div>
+  <div class="status-row">
+    <div class="status-check"><div class="check-box" style="width:16px;height:16px"></div> Action Complete</div>
+    <div style="font-size:9px;color:#888">🔗 ${s.url.replace('https://','')}</div>
+  </div>
+</div>`).join('')}
+
+<div class="footer">
+  Sila Services L&D Training Incentives Navigator · ${KB_LAST_UPDATED} · 7 Priority Actions · All actions unlock direct cost offsets to Sila — not external school funding<br>
+  Questions: share this tracker with your Workforce Development Specialist or regional DOL American Job Center
+</div>
 </body></html>`;
     const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
   };
@@ -1050,21 +1231,50 @@ ${AGENCIES.map(a=>`<tr><td>${a.name}</td><td style="font-size:10px;color:#555">$
                     ))}
                   </div>
                   <div className="cn" style={{marginBottom:10}}>Prioritized Action Sequence{selectedState?` — ${stateName}`:""}</div>
-                  {NEXT_STEPS.map((s,i)=>(
-                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" className="ns-row" style={{borderColor:i===0?"rgba(212,168,50,.35)":i<2?"rgba(91,170,114,.25)":"rgba(255,255,255,.07)"}}>
-                      <div style={{width:32,height:32,borderRadius:"50%",background:i===0?"rgba(212,168,50,.2)":i<2?"rgba(91,170,114,.15)":"rgba(107,158,199,.12)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontWeight:800,fontSize:13,color:i===0?"#D4A832":i<2?"#5BAA72":"#6B9EC7",fontFamily:"'DM Sans',sans-serif"}}>{i+1}</div>
-                      <div style={{flex:1}}>
-                        <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
-                          <span style={{fontSize:13,fontWeight:700,color:"#E0D8C8",fontFamily:"'DM Sans',sans-serif"}}>{s.action}</span>
-                          <span className="badge" style={{background:s.priority==="This Week"?"rgba(212,168,50,.15)":s.priority==="This Month"?"rgba(91,170,114,.12)":"rgba(107,158,199,.1)",color:s.priority==="This Week"?"#D4A832":s.priority==="This Month"?"#5BAA72":"#6B9EC7",border:"none",margin:0,fontSize:9}}>{s.priority}</span>
+                  {NEXT_STEPS.map((s,i)=>{
+                    const isOpen=openNS.has(i);
+                    const toggleNS=e=>{e.preventDefault();e.stopPropagation();setOpenNS(prev=>{const n=new Set(prev);n.has(i)?n.delete(i):n.add(i);return n;});};
+                    const pc=i===0?"rgba(212,168,50,.35)":i<2?"rgba(91,170,114,.25)":"rgba(255,255,255,.07)";
+                    const nc=i===0?"#D4A832":i<2?"#5BAA72":"#6B9EC7";
+                    const nb=i===0?"rgba(212,168,50,.2)":i<2?"rgba(91,170,114,.15)":"rgba(107,158,199,.12)";
+                    return(
+                      <div key={i} className="ns-row" style={{borderColor:isOpen?nc:pc,flexDirection:"column",gap:0,padding:0,cursor:"default"}}>
+                        <div style={{display:"flex",gap:12,padding:"13px 14px",alignItems:"flex-start"}}>
+                          <div style={{width:32,height:32,borderRadius:"50%",background:nb,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontWeight:800,fontSize:13,color:nc,fontFamily:"'DM Sans',sans-serif"}}>{i+1}</div>
+                          <div style={{flex:1}}>
+                            <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
+                              <span style={{fontSize:13,fontWeight:700,color:"#E0D8C8",fontFamily:"'DM Sans',sans-serif"}}>{s.action}</span>
+                              <span className="badge" style={{background:s.priority==="This Week"?"rgba(212,168,50,.15)":s.priority==="This Month"?"rgba(91,170,114,.12)":"rgba(107,158,199,.1)",color:s.priority==="This Week"?"#D4A832":s.priority==="This Month"?"#5BAA72":"#6B9EC7",border:"none",margin:0,fontSize:9}}>{s.priority}</span>
+                            </div>
+                            <div style={{fontSize:12,color:"#5A7A8A",fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>{s.detail}</div>
+                          </div>
+                          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0}}>
+                            <button onClick={toggleNS} style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:nc,background:"transparent",border:`1px solid ${pc}`,borderRadius:6,padding:"4px 10px",cursor:"pointer",whiteSpace:"nowrap",transition:"all .15s"}}>
+                              {isOpen?"▲ Hide":"▼ Steps ("}{s.steps.length}{isOpen?"":")"}
+                            </button>
+                            <a href={s.url} target="_blank" rel="noopener noreferrer" style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#3A5A6A",textDecoration:"none"}}>🔗 Open ↗</a>
+                          </div>
                         </div>
-                        <div style={{fontSize:12,color:"#5A7A8A",fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>{s.detail}</div>
-                        <div style={{fontSize:10,color:"#3A5A6A",marginTop:2,fontFamily:"'DM Sans',sans-serif"}}>🔗 {s.url.replace("https://","")}</div>
+                        {isOpen&&(
+                          <div style={{borderTop:`1px solid ${pc}`,padding:"12px 14px 14px",background:"rgba(0,0,0,.1)"}}>
+                            <div className="cn" style={{marginBottom:8,color:nc}}>Step-by-step — check off as you go</div>
+                            {s.steps.map((st,j)=>(
+                              <div key={j} style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:7,padding:"7px 10px",borderRadius:6,background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.05)"}}>
+                                <div style={{width:18,height:18,borderRadius:3,border:`1.5px solid ${nc}`,flexShrink:0,marginTop:1,opacity:.7}}/>
+                                <div style={{width:20,flexShrink:0,fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,color:nc,textAlign:"right"}}>{j+1}</div>
+                                <div style={{flex:1,fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#B0C4D0",lineHeight:1.65}}>{st}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      <div style={{color:"#3A5A6A",fontSize:14,flexShrink:0,alignSelf:"center"}}>↗</div>
-                    </a>
-                  ))}
-                  <div style={{paddingBottom:18}}/>
+                    );
+                  })}
+                  <div style={{display:"flex",justifyContent:"flex-end",paddingTop:10,paddingBottom:18}}>
+                    <button className="print-btn" onClick={handlePrintTracker} style={{fontSize:13,padding:"10px 18px",gap:8}}>
+                      🖨️ Print Implementation Tracker
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
