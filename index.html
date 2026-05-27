@@ -419,6 +419,108 @@ const NEXT_STEPS=[
   },
 ];
 
+const GLOSSARY=[
+  // Program Terms
+  {term:"Registered Apprenticeship",cat:"Programs",aka:"RA",def:"A DOL-registered in-house training program with defined OJT hours, RTI hours, and a wage progression schedule. The single most important action — registering formalizes what Sila already does and simultaneously unlocks WOTC, GI Bill OJT, state tax credits, and IRA bonus credits."},
+  {term:"OJT (On-the-Job Training)",cat:"Programs",def:"WIOA program where the government reimburses Sila 50–75% of a new hire's wages during their in-house training period. An OJT Agreement must be signed with your local WDB BEFORE the hire starts — retroactive applications are never accepted."},
+  {term:"IWT (Incumbent Worker Training)",cat:"Programs",def:"WIOA program reimbursing up to 50% of training costs for upskilling your existing employees — NATE prep, EPA 608, ServiceTitan, diagnostic training. Applies to current techs only, not new hires. OJT and IWT cover different populations."},
+  {term:"WOTC (Work Opportunity Tax Credit)",cat:"Programs",def:"IRS tax credit reducing Sila's federal tax bill by up to $9,600 per qualifying new hire. You can only claim ONE credit per hire — pick the highest qualifying category. File Form 8850 within 28 days of start date. Missing this deadline forfeits the credit permanently."},
+  {term:"§127 Educational Assistance Plan",cat:"Programs",def:"IRS provision letting employers pay up to $5,250/year of an employee's in-house training costs completely tax-free — no income tax, no FICA for either party. Covers NATE, EPA 608, OSHA, Sila University courses. Requires a written plan document (one-time setup ~$1–2K attorney fee)."},
+  {term:"Federal Bonding Program",cat:"Programs",def:"Free $25,000 fidelity bond provided by DOL for at-risk hires: ex-offenders, homeless individuals, recovering addicts. Eliminates the bonding barrier that often disqualifies strong trade candidates. Stacks directly with WOTC for ex-felon hires."},
+  {term:"Going PRO Talent Fund",cat:"Programs",def:"Michigan's premier employer training grant — up to $900,000 per employer for in-house, employer-directed training. One of the largest direct employer training grants in the country. Spring application cycle. Carter's Plumbing and Levine & Sons are the target brands."},
+  {term:"TechCred",cat:"Programs",def:"Ohio's technology credential reimbursement program — $2,000 per credential earned (NATE, EPA 608, building automation, etc.), up to $30,000 per employer per quarter. Ohio brands should apply every single quarter at techcred.ohio.gov."},
+  {term:"WEDnet",cat:"Programs",def:"Pennsylvania's incumbent worker training program — $450–$850 per employee for employer-directed training. Low barriers, rolling applications. Applies to all 9 PA Sila brands for any in-house training program."},
+  {term:"WTFP (Workforce Training Fund Program)",cat:"Programs",def:"Massachusetts's employer grant — up to $250,000 for employer-directed, in-house training programs. One of the most generous state training grants in Sila's footprint. Rolling applications at workforcetrainingfund.org."},
+  {term:"EARN Maryland",cat:"Programs",def:"Maryland's employer-driven sector partnership grant — up to $500,000 for multi-employer, industry-directed training. Training is designed and directed by the employers, not a school."},
+  // Regulatory / Process Terms
+  {term:"OJT Agreement",cat:"Regulatory",def:"The contract between Sila and the local Workforce Development Board that sets the reimbursement rate, training duration, and eligible positions for OJT. Must be signed before the qualifying hire starts — cannot be applied retroactively under any circumstances."},
+  {term:"Form 8850",cat:"Regulatory",def:"The IRS pre-screening notice for WOTC. Must be signed on or before the employee's first day of work, then submitted to your State Workforce Agency within 28 calendar days. This deadline is absolute — there are no extensions or exceptions."},
+  {term:"Form 5884",cat:"Regulatory",def:"The IRS form filed with your corporate tax return to claim the WOTC tax credit, after the State Workforce Agency has certified the hire. Prepared by your CPA or tax preparer based on the SWA certification letter."},
+  {term:"Certificate of Registration",cat:"Regulatory",def:"The official DOL document confirming your in-house apprenticeship program is federally registered. Required before your State Approving Agency will approve your program for GI Bill OJT benefits. Takes 4–6 weeks to receive."},
+  {term:"SAA (State Approving Agency)",cat:"Regulatory",def:"The state entity that approves employer programs for GI Bill OJT benefits. You apply to the SAA, not the VA directly. Must have your Certificate of Registration before applying. Approval takes 4–8 weeks."},
+  {term:"WDB (Workforce Development Board)",cat:"Regulatory",def:"Local governing board administering WIOA programs: OJT agreements, IWT grants, and job seeker services. Your primary point of contact for federal training reimbursements. Their service delivery points are called American Job Centers."},
+  {term:"RTI (Related Technical Instruction)",cat:"Regulatory",def:"The classroom and theoretical learning component of a registered apprenticeship — minimum 144 hours per year. Sila University coursework, NATE exam prep, EPA 608 study, and OSHA training all count as RTI. Does not need to take place at an external school."},
+  {term:"WIOA (Workforce Innovation and Opportunity Act)",cat:"Regulatory",def:"The 2014 federal law that funds OJT, IWT, and apprenticeship programs through the national network of American Job Centers. The foundation of most employer-side federal training support."},
+  {term:"Prevailing Wage",cat:"Regulatory",def:"The area-standard wage for a given trade, set by the DOL under the Davis-Bacon Act. Some IRA clean energy credits require paying prevailing wages to earn the full bonus. Generally equivalent to union wage rates in the relevant area."},
+  // Credential Terms
+  {term:"EPA 608 Certification",cat:"Credentials",def:"Federal certification required for any technician who handles refrigerants — no exceptions. Types: I (small appliances), II (high-pressure systems), III (low-pressure systems), Universal (all types). HVAC techs need Universal. No expiration, but new refrigerant types may require re-certification."},
+  {term:"NATE (North American Technician Excellence)",cat:"Credentials",def:"The gold-standard HVAC certification in the U.S. Core Exam + specialty exams: Air Conditioning, Heat Pumps, Gas Heating, Oil Heating, Air Distribution. NATE-certified techs command higher wages, generate fewer callbacks, and close more premium service agreements."},
+  {term:"NCCER",cat:"Credentials",def:"National Center for Construction Education and Research. Provides standardized curriculum and nationally portable credentials for all major trades. Employers who become NCCER Sponsors run the curriculum and issue credentials entirely in-house — no school enrollment required."},
+  {term:"OSHA 10 / OSHA 30",cat:"Credentials",def:"Workplace safety training cards. OSHA 10 is 10 hours of general safety; OSHA 30 is 30 hours with supervisory focus. Often required by state apprenticeship programs, some grants, and commercial customers. Both count as RTI under a registered apprenticeship."},
+  // Licensing Terms
+  {term:"Journeyman License",cat:"Licensing",def:"An individual trade license (plumbing or electrical in most Sila states) required before a tech can work independently on customer jobs without a licensed supervisor present. Requires 3–5 years of supervised apprenticeship + a state exam. Until this license is held, a licensed master must be on or accessible to every job."},
+  {term:"Master License",cat:"Licensing",def:"The highest individual trade license. Required to pull permits, operate as a licensed contractor, and legally supervise apprentices. Requires journeyman license + 2–5 additional years of experience + a separate, more rigorous exam."},
+  {term:"HVAC/R Technician License",cat:"Licensing",def:"Individual or company license required in certain states (CT, MA, NH, NJ, VA, VT, WI, MI, MD, ME) before an HVAC tech can work independently. Not required at the individual level in PA, OH, DE, or IL — in those states, EPA 608 is the main milestone for field independence."},
+  // Veterans Terms
+  {term:"SkillBridge",cat:"Veterans",def:"DoD program where active-duty service members (within 180 days of separation) train at your facility for 4–6 months. DoD pays their full military salary — employer labor cost is $0. One of the most powerful labor cost offsets available. Many SkillBridge participants convert to full-time hires and often also qualify for GI Bill OJT afterward."},
+  {term:"GI Bill OJT / Chapter 33",cat:"Veterans",def:"Post-9/11 GI Bill benefit where the VA pays a veteran apprentice $1,800–$2,717/month in Monthly Housing Allowance (MHA) while they train in-house at your registered apprenticeship. VA pays the veteran directly — Sila pays nothing extra. Requires SAA approval of your in-house program."},
+  {term:"MHA (Monthly Housing Allowance)",cat:"Veterans",def:"The monthly stipend the VA pays to GI Bill OJT apprentices — $1,800–$2,717/month depending on location. Paid directly to the veteran, on top of their Sila wages. From the employer's perspective, this is a direct labor cost reduction: your wages go further because the VA supplements the employee's total compensation."},
+  {term:"VA VR&E / Chapter 31",cat:"Veterans",def:"VA Vocational Rehabilitation & Employment program. For veterans with service-connected disability ratings of 20%+. The VA pays ALL training costs and a monthly subsistence allowance while the veteran trains in-house at Sila's facility. Zero cost to employer."},
+  // Concepts
+  {term:"Direct Benefit (as used here)",cat:"Concepts",def:"Programs where money or credits flow directly to Sila — wage reimbursements, tax credits, grants paid to you — or that directly reduce Sila's in-house training costs. Contrasted with 'External Funding' programs where money goes to a school, institution, or student, not to the employer."},
+  {term:"Incumbent Worker",cat:"Concepts",def:"A currently employed worker being upskilled (as opposed to a new hire). IWT grants specifically target incumbent workers. Once someone completes the OJT new-hire period, they become an incumbent and later qualify for IWT grants for continued upskilling."},
+  {term:"Tax Credit vs. Tax Deduction",cat:"Concepts",def:"A tax deduction reduces your taxable income (saves you your tax rate × the deduction). A tax credit directly reduces your tax bill dollar-for-dollar. WOTC is a credit — a $9,600 WOTC credit means $9,600 less in taxes owed, regardless of tax rate. Credits are more valuable."},
+  {term:"Stacking",cat:"Concepts",def:"Using multiple programs simultaneously on the same hire or the same training expense. Most programs are designed to be complementary. Example: a veteran new hire can generate WOTC, OJT reimbursement, GI Bill OJT, and Federal Bonding simultaneously — they are separate programs from separate agencies."},
+];
+
+const STACKING_RULES={
+  wotcRule:"WOTC: ONE credit per hire — always use the HIGHEST qualifying category. If a veteran also receives SNAP, claim the veteran rate ($9,600), not SNAP ($2,400). Never add multiple WOTC credits for the same hire.",
+  canStack:[
+    {a:"WOTC",b:"OJT Wage Reimbursement",color:"#5BAA72",value:"Most common stack — a new hire who is SNAP-eligible earns a $2,400 tax credit while also generating 50% wage reimbursement during training. Different programs, different agencies, fully compatible."},
+    {a:"WOTC (Veteran)",b:"GI Bill OJT",color:"#78B5D8",value:"Most powerful stack — veteran hire generates up to $9,600 WOTC credit AND the VA pays $1,800–$2,717/month to the veteran while they train. Employer pays nothing extra for the GI Bill portion."},
+    {a:"WOTC (Ex-Felon)",b:"Federal Bonding",color:"#D4A832",value:"An ex-offender hire generates a $2,400 WOTC credit AND qualifies for a free $25,000 fidelity bond. Apply for both simultaneously at hire."},
+    {a:"OJT",b:"State Apprenticeship Credit",color:"#5BAA72",value:"New hire enrolled in your registered apprenticeship generates OJT wage reimbursement (50-75% of training wages) AND a state tax credit ($2,500–$5,000 depending on state). Stack freely."},
+    {a:"OJT",b:"SkillBridge → then OJT",color:"#A07CC5",value:"SkillBridge: DoD pays salary for 4–6 month pre-hire trial ($0 labor cost). Then on official hire date, OJT agreement activates (50-75% wage reimbursement during training). Sequential stack converting free labor trial into a subsidized hire."},
+    {a:"Any hire",b:"§127 Plan",color:"#8BB5A0",value:"§127 stacks with everything. Once the plan is established, all qualifying training expenses are tax-free for every employee at all times — independent of hire type or any other program."},
+    {a:"Registered Apprenticeship",b:"IRA Clean Energy Bonus",color:"#6ABFC0",value:"HVAC/electrical employers with in-house apprentices installing heat pumps or EV chargers earn a +10% bonus on applicable IRA clean energy credits. Apprenticeship registration is the gate to the bonus."},
+  ],
+  cannotStack:[
+    {note:"WOTC categories: you cannot combine multiple WOTC categories for one hire. Pick the single highest-value category and claim that one credit."},
+    {note:"OJT + IWT for the same person at the same time: OJT applies during new hire training; IWT applies to incumbent workers being upskilled. They serve different populations, not the same employee simultaneously."},
+    {note:"Two state grants for the same training event: you cannot bill the same training hours or costs to two different state grant programs at the same time. Each grant is for distinct, separately documented training activities."},
+  ],
+  topStacks:[
+    {
+      title:"🎖 The Veteran Hire — Maximum Stack",
+      profile:"Active duty or recently separated veteran, 6+ months unemployed",
+      items:[
+        {prog:"WOTC — Veteran 6+ months unemployed",v:"Up to $9,600",t:"Tax credit on next return"},
+        {prog:"OJT Wage Reimbursement",v:"~$3,500",t:"Monthly from WDB during training"},
+        {prog:"GI Bill OJT Housing Allowance",v:"$21,600–$32,604/yr",t:"VA pays veteran directly — $0 to Sila"},
+        {prog:"Federal Bonding",v:"$25,000 coverage",t:"Automatically at hire, no cost"},
+        {prog:"State Apprenticeship Tax Credit",v:"$2,500–$5,000",t:"State tax filing"},
+        {prog:"SkillBridge (if still active duty)",v:"$0 labor cost × 4–6 months",t:"Before hire — sequential"},
+      ],
+      total:"$37,000–$50,000+ per veteran hire",
+      note:"One veteran in a registered apprenticeship can generate more combined benefit than most employers think is possible from a single hire."
+    },
+    {
+      title:"🔧 The SNAP / Long-Term Unemployed New Hire",
+      profile:"SNAP recipient or someone unemployed 27+ weeks",
+      items:[
+        {prog:"WOTC — SNAP or Long-Term Unemployed",v:"$2,400",t:"Tax credit on next return"},
+        {prog:"OJT Wage Reimbursement",v:"~$3,500",t:"Monthly from WDB during training"},
+        {prog:"State Apprenticeship Credit",v:"$2,500–$5,000",t:"State tax filing"},
+        {prog:"§127 Tax Savings",v:"~$1,300/yr",t:"Payroll — ongoing"},
+      ],
+      total:"~$9,700–$12,200 per hire",
+      note:"Common hire type for re-entry programs. Check if they also qualify as a Designated Community Resident or Vocational Rehab referral for potential upgrade to higher WOTC category."
+    },
+    {
+      title:"⚡ The Ex-Felon Hire — Re-Entry Stack",
+      profile:"Ex-offender within 1 year of conviction or release",
+      items:[
+        {prog:"WOTC — Ex-Felon",v:"$2,400",t:"Tax credit on next return"},
+        {prog:"OJT Wage Reimbursement",v:"~$3,500",t:"Monthly from WDB during training"},
+        {prog:"Federal Bonding (free $25K coverage)",v:"$25,000 risk coverage",t:"Eliminates bonding barrier at hire"},
+        {prog:"§127 Tax Savings",v:"~$1,300/yr",t:"Payroll — ongoing"},
+      ],
+      total:"~$5,900 cash + $25,000 bond coverage",
+      note:"Federal Bonding eliminates the biggest barrier to hiring re-entry candidates in trades. Strong HVAC and plumbing pipeline from re-entry programs."
+    },
+  ]
+};
+
 const AGENCIES=[
   {name:"DOL Employment & Training Administration (ETA)",dept:"U.S. Dept. of Labor",role:"Administers OJT wage reimbursement, Incumbent Worker Training, WOTC, Federal Bonding, and registered apprenticeship programs. Your #1 contact for in-house OJT agreements and apprenticeship registration.",url:"https://www.dol.gov/agencies/eta"},
   {name:"Office of Apprenticeship (OA)",dept:"U.S. Dept. of Labor",role:"Registers employer apprenticeship programs nationwide. Registration formalizes your in-house OJT and unlocks WOTC, GI Bill OJT, state tax credits, and IRA bonus credits simultaneously.",url:"https://www.apprenticeship.gov/employers/registered-apprenticeship-program"},
@@ -512,7 +614,7 @@ function App(){
   const[wage,setWage]=useState(22);
   const[hrs,setHrs]=useState(40);
   const[weeks,setWeeks]=useState(8);
-  const[wotcCat,setWotcCat]=useState(0);
+  const[wotcCats,setWotcCats]=useState(new Set());
   const[wotcPct,setWotcPct]=useState(40);
   const[ojt,setOjt]=useState(true);
   const[ojtP,setOjtP]=useState(50);
@@ -576,8 +678,9 @@ function App(){
   const fedTotal=useMemo(()=>fedProgs.reduce((a,p)=>a+(p.calcMax||0),0),[fedProgs]);
   const grandTotal=stateTotal+fedTotal;
 
+  const bestWotcIdx=wotcCats.size>0?[...wotcCats].reduce((b,i)=>WOTC_CATEGORIES[i].maxCredit>WOTC_CATEGORIES[b].maxCredit?i:b):null;
   const annWage=wage*hrs*52,trnWages=wage*hrs*weeks;
-  const wotcV=Math.min(WOTC_CATEGORIES[wotcCat].maxCredit,annWage*.4)*(hires*wotcPct/100);
+  const wotcV=bestWotcIdx!=null?Math.min(WOTC_CATEGORIES[bestWotcIdx].maxCredit,annWage*.4)*(hires*wotcPct/100):0;
   const ojtV=ojt?trnWages*(ojtP/100)*hires:0,iwtV=iwt?iwtC*(iwtP/100)*hires:0;
   const apprV=appr?2000*hires:0,stateV=stateC?stateA*hires:0;
   const s127V=s127?Math.min(s127A,5250)*hires*(txR/100):0;
@@ -629,7 +732,7 @@ Values represent maximum potential if all programs are pursued. Actual awards de
     const rows=[
       ojt?{l:"OJT Wage Reimbursement",sub:`${ojtP}% of wages during ${weeks}-week in-house training × ${hires} hires`,v:ojtV}:null,
       iwt?{l:"Incumbent Worker Training Grant",sub:`${iwtP}% of $${iwtC.toLocaleString()} training cost × ${hires}`,v:iwtV}:null,
-      {l:"WOTC Tax Credit",sub:`${wotcPct}% of hires — ${WOTC_CATEGORIES[wotcCat].label}`,v:wotcV},
+      {l:`WOTC Tax Credit`,sub:`${wotcPct}% of hires — ${bestWotcIdx!=null?WOTC_CATEGORIES[bestWotcIdx].label:'no category selected'}`,v:wotcV},
       appr?{l:"Registered Apprenticeship Grant",sub:`$2,000 base × ${hires} apprentices`,v:apprV}:null,
       stateC?{l:`State Apprenticeship Credit${selectedState?" ("+selectedState+")":""}`,sub:`$${stateA.toLocaleString()} × ${hires}`,v:stateV}:null,
       s127?{l:"§127 Educational Assistance Tax Savings",sub:`${txR}% × $${Math.min(s127A,5250).toLocaleString()} × ${hires}`,v:s127V}:null,
@@ -955,7 +1058,7 @@ ${NEXT_STEPS.map((s,i)=>`
           </div>
         </div>
         <div style={{display:"flex",borderBottom:"1px solid rgba(212,168,50,.14)",marginTop:18,overflowX:"auto"}}>
-          {[{id:"programs",label:"Programs"},{id:"calculator",label:"Calculator"},{id:"acts",label:"Legislation"},{id:"agencies",label:"Agencies"}].map(t=>(
+          {[{id:"programs",label:"Programs"},{id:"calculator",label:"Calculator"},{id:"guide",label:"💡 Guide"},{id:"acts",label:"Legislation"},{id:"agencies",label:"Agencies"}].map(t=>(
             <button key={t.id} className={`tab-btn${tab===t.id?" on":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
           ))}
         </div>
@@ -1301,14 +1404,37 @@ ${NEXT_STEPS.map((s,i)=>`
                   </div>
                   <div style={{fontSize:11,color:"#2A4050",marginTop:9,fontFamily:"'DM Sans',sans-serif"}}>OJT wages during training: ${(wage*hrs*weeks).toLocaleString()} · Annual wage: ${(wage*hrs*52).toLocaleString()}</div>
                 </div>
-                <h2 className="serif" style={{fontSize:18,color:"#D4A832",marginBottom:13}}>WOTC Tax Credit</h2>
+                <h2 className="serif" style={{fontSize:18,color:"#D4A832",marginBottom:8}}>WOTC — Check All Qualifying Hire Types</h2>
+                <div style={{fontSize:11,color:"#5A7A8A",marginBottom:11,fontFamily:"'DM Sans',sans-serif",padding:"8px 11px",background:"rgba(212,168,50,.06)",borderRadius:7,border:"1px solid rgba(212,168,50,.14)"}}>
+                  Check <strong style={{color:"#D4A832"}}>every category this hire type qualifies for</strong>. WOTC only allows ONE credit per hire — the calculator automatically uses your highest qualifying category. The other categories inform what else to apply for.
+                </div>
                 <div className="crd">
-                  <div style={{marginBottom:11}}><div className="cn">Hire Category</div>
-                    <select className="csel" value={wotcCat} onChange={e=>setWotcCat(parseInt(e.target.value))}>
-                      {WOTC_CATEGORIES.map((c,i)=><option key={i} value={i}>{c.label} (max ${c.maxCredit.toLocaleString()})</option>)}
-                    </select>
+                  <div style={{display:"flex",flexDirection:"column",gap:5,marginBottom:12}}>
+                    {WOTC_CATEGORIES.map((c,i)=>{
+                      const checked=wotcCats.has(i);
+                      const isBest=bestWotcIdx===i&&wotcCats.size>0;
+                      return(
+                        <div key={i} onClick={()=>{setWotcCats(prev=>{const n=new Set(prev);n.has(i)?n.delete(i):n.add(i);return n;});}} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 11px",borderRadius:7,cursor:"pointer",background:isBest?"rgba(212,168,50,.12)":checked?"rgba(91,170,114,.07)":"rgba(255,255,255,.02)",border:isBest?"1.5px solid rgba(212,168,50,.5)":checked?"1.5px solid rgba(91,170,114,.25)":"1.5px solid rgba(255,255,255,.05)",transition:"all .12s"}}>
+                          <div style={{width:18,height:18,borderRadius:4,border:`2px solid ${isBest?"#D4A832":checked?"#5BAA72":"#2A4050"}`,background:checked?"rgba(91,170,114,.3)":"transparent",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                            {checked&&<span style={{color:isBest?"#D4A832":"#5BAA72",fontSize:12,fontWeight:800,lineHeight:1}}>✓</span>}
+                          </div>
+                          <div style={{flex:1}}>
+                            <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:checked?600:400,color:isBest?"#D4A832":checked?"#E0D8C8":"#5A7A8A"}}>{c.label.split(" (max")[0]}</span>
+                            <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:isBest?"#D4A832":"#3A5060",marginLeft:6}}>max ${c.maxCredit.toLocaleString()}</span>
+                          </div>
+                          {isBest&&<span style={{fontFamily:"'DM Sans',sans-serif",fontSize:9,fontWeight:700,color:"#D4A832",background:"rgba(212,168,50,.15)",padding:"2px 7px",borderRadius:100,flexShrink:0}}>⭐ BEST — USE THIS</span>}
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div><div className="cn">% of In-House Hires in This Category</div><input type="number" className="ci" value={wotcPct} min={0} max={100} onChange={e=>setWotcPct(parseInt(e.target.value)||0)}/></div>
+                  {bestWotcIdx!=null&&(
+                    <div style={{background:"rgba(212,168,50,.1)",border:"1.5px solid rgba(212,168,50,.35)",borderRadius:8,padding:"9px 12px",marginBottom:10}}>
+                      <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,color:"#D4A832",marginBottom:2}}>⭐ WOTC Credit for this hire: ${Math.min(WOTC_CATEGORIES[bestWotcIdx].maxCredit,(wage*hrs*52)*.4).toLocaleString()}</div>
+                      <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#A08030"}}>Using: {WOTC_CATEGORIES[bestWotcIdx].label.split(" (max")[0]} — your highest qualifying category</div>
+                      {wotcCats.size>1&&<div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#6A6040",marginTop:3}}>Other checked categories don't add to WOTC but may qualify this hire for Federal Bonding, VA programs, or OJT.</div>}
+                    </div>
+                  )}
+                  <div><div className="cn">% of Hires Qualifying for WOTC</div><input type="number" className="ci" value={wotcPct} min={0} max={100} onChange={e=>setWotcPct(parseInt(e.target.value)||0)}/><div style={{fontSize:11,color:"#2A4050",marginTop:3,fontFamily:"'DM Sans',sans-serif"}}>e.g. 40% = 40% of your new hires are in a WOTC qualifying category</div></div>
                 </div>
                 <h2 className="serif" style={{fontSize:18,color:"#D4A832",marginBottom:13}}>Direct Offset Programs</h2>
                 <div className="crd">
@@ -1338,7 +1464,7 @@ ${NEXT_STEPS.map((s,i)=>`
                 </div>
                 <div className="crd">
                   <div className="cn" style={{marginBottom:11}}>Breakdown</div>
-                  {[{l:"WOTC Tax Credit",sub:`${wotcPct}% · ${WOTC_CATEGORIES[wotcCat].label.split("(")[0].trim()}`,v:wotcV,c:"#D4A832"},
+                  {[wotcCats.size>0?{l:"WOTC Tax Credit",sub:`${wotcPct}% qualifying · Best: ${bestWotcIdx!=null?WOTC_CATEGORIES[bestWotcIdx].label.split(" (max")[0]:""}`,v:wotcV,c:"#D4A832"}:null,
                     ojt?{l:"OJT Wage Reimbursement",sub:`${ojtP}% × ${weeks} wks × ${hires}`,v:ojtV,c:"#6B9EC7"}:null,
                     iwt?{l:"Incumbent Worker Training",sub:`${iwtP}% of $${iwtC.toLocaleString()} × ${hires}`,v:iwtV,c:"#A07CC5"}:null,
                     appr?{l:"Apprenticeship Grant",sub:`$2,000 × ${hires}`,v:apprV,c:"#5BAA72"}:null,
@@ -1369,6 +1495,104 @@ ${NEXT_STEPS.map((s,i)=>`
                 <div style={{background:"rgba(91,170,114,.06)",border:"1.5px solid rgba(91,170,114,.18)",borderRadius:9,padding:12}}>
                   <div style={{fontSize:11,color:"#5A7A6A",lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}><strong style={{color:"#5BAA72"}}>⚠ Planning Estimate Only.</strong> Verify with a workforce development specialist or CPA before relying on figures.</div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* GUIDE — Stacking + Glossary */}
+        {tab==="guide"&&(
+          <div>
+            {/* Stacking Rules */}
+            <div style={{marginBottom:28}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:5}}>
+                <span className="serif" style={{fontSize:22,color:"#D4A832"}}>Program Stacking Guide</span>
+              </div>
+              <p style={{fontSize:13,color:"#4A6A7A",marginBottom:18,lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>Most programs are designed to work together. The same hire or the same training investment can unlock multiple programs simultaneously — that's the strategy.</p>
+              {/* WOTC rule callout */}
+              <div style={{background:"rgba(212,168,50,.08)",border:"2px solid rgba(212,168,50,.4)",borderRadius:11,padding:"13px 16px",marginBottom:16,display:"flex",gap:12,alignItems:"flex-start"}}>
+                <span style={{fontSize:22,flexShrink:0}}>⚠️</span>
+                <div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:"#D4A832",marginBottom:4}}>The WOTC Rule — Important</div>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#C0A858",lineHeight:1.7}}>{STACKING_RULES.wotcRule}</div></div>
+              </div>
+              {/* Can stack */}
+              <div className="cn" style={{marginBottom:10,color:"#5BAA72"}}>✅ Programs That Stack — Same Hire, Multiple Benefits</div>
+              {STACKING_RULES.canStack.map((r,i)=>(
+                <div key={i} style={{display:"flex",gap:12,padding:"12px 14px",borderRadius:9,marginBottom:7,background:"rgba(91,170,114,.05)",border:"1.5px solid rgba(91,170,114,.18)"}}>
+                  <div style={{display:"flex",gap:8,alignItems:"center",flexShrink:0,flexWrap:"wrap",minWidth:180,maxWidth:220}}>
+                    <span className="badge state-pill" style={{background:"rgba(91,170,114,.12)",color:"#5BAA72",border:"1px solid rgba(91,170,114,.3)",margin:0,fontSize:10}}>{r.a}</span>
+                    <span style={{fontFamily:"'DM Sans',sans-serif",color:"#3A5060",fontSize:12}}>+</span>
+                    <span className="badge fed-pill" style={{margin:0,fontSize:10}}>{r.b}</span>
+                  </div>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#7A9AB0",lineHeight:1.7,flex:1}}>{r.value}</div>
+                </div>
+              ))}
+              {/* Cannot stack */}
+              <div className="cn" style={{marginBottom:10,marginTop:18,color:"#C07070"}}>❌ Programs That Do NOT Stack</div>
+              {STACKING_RULES.cannotStack.map((r,i)=>(
+                <div key={i} style={{display:"flex",gap:10,padding:"10px 14px",borderRadius:9,marginBottom:6,background:"rgba(200,80,80,.05)",border:"1px solid rgba(200,80,80,.18)"}}>
+                  <span style={{color:"#C07070",flexShrink:0,fontSize:14}}>✕</span>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#8A7070",lineHeight:1.7}}>{r.note}</div>
+                </div>
+              ))}
+              {/* Top stacks */}
+              <div className="cn" style={{marginBottom:12,marginTop:22,color:"#D4A832"}}>⭐ Highest-Value Hire Combinations — Maximum Stacks</div>
+              {STACKING_RULES.topStacks.map((s,i)=>(
+                <div key={i} style={{background:"rgba(255,255,255,.03)",border:"1.5px solid rgba(212,168,50,.2)",borderRadius:12,padding:"15px 16px",marginBottom:12}}>
+                  <div style={{fontSize:15,fontWeight:700,color:"#F0E8D4",fontFamily:"'DM Sans',sans-serif",marginBottom:3}}>{s.title}</div>
+                  <div style={{fontSize:11,color:"#5A7A8A",fontFamily:"'DM Sans',sans-serif",marginBottom:11}}>Profile: {s.profile}</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:5,marginBottom:12}}>
+                    {s.items.map((item,j)=>(
+                      <div key={j} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 10px",borderRadius:7,background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",flexWrap:"wrap",gap:6}}>
+                        <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#C0D0DC",flex:1}}>{item.prog}</div>
+                        <div style={{textAlign:"right",flexShrink:0}}>
+                          <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:"#5BAA72"}}>{item.v}</div>
+                          <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#3A5060"}}>{item.t}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"rgba(212,168,50,.1)",borderRadius:8,border:"1px solid rgba(212,168,50,.25)",marginBottom:8}}>
+                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:"#D4A832"}}>Combined Value</span>
+                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:900,color:"#D4A832"}}>{s.total}</span>
+                  </div>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#5A7A8A",lineHeight:1.65}}>{s.note}</div>
+                </div>
+              ))}
+            </div>
+            {/* Glossary */}
+            <div>
+              <div className="serif" style={{fontSize:22,color:"#D4A832",marginBottom:5}}>Term Glossary</div>
+              <p style={{fontSize:13,color:"#4A6A7A",marginBottom:18,lineHeight:1.7,fontFamily:"'DM Sans',sans-serif"}}>Plain-English definitions for every acronym and term used in this tool — written for Sila's HR and ops teams, not government bureaucrats.</p>
+              {['Programs','Regulatory','Credentials','Licensing','Veterans','Concepts'].map(cat=>{
+                const terms=GLOSSARY.filter(g=>g.cat===cat);
+                if(!terms.length)return null;
+                const catIcon={'Programs':'💰','Regulatory':'📋','Credentials':'🏆','Licensing':'🪪','Veterans':'🎖','Concepts':'💡'}[cat]||'📌';
+                return(
+                  <div key={cat} style={{marginBottom:20}}>
+                    <div className="sec-header" style={{marginBottom:8}}>
+                      <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:"#D4A832",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:7}}>
+                        <span>{catIcon}</span>{cat}
+                      </div>
+                      <div className="sec-header-line"/>
+                    </div>
+                    {terms.map((g,i)=>(
+                      <div key={i} style={{display:"flex",gap:12,padding:"11px 14px",borderRadius:9,marginBottom:6,background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)"}}>
+                        <div style={{minWidth:0,flex:1}}>
+                          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
+                            <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:"#E0D8C8"}}>{g.term}</span>
+                            {g.aka&&<span className="badge" style={{background:"rgba(212,168,50,.1)",color:"#D4A832",border:"1px solid rgba(212,168,50,.2)",margin:0,fontSize:9}}>{g.aka}</span>}
+                            <span className="badge" style={{background:"rgba(107,158,199,.08)",color:"#5A8AB0",border:"none",margin:0,fontSize:9}}>{g.cat}</span>
+                          </div>
+                          <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#6A8AAA",lineHeight:1.75}}>{g.def}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+              <div style={{fontSize:11,color:"#2A3A4A",fontFamily:"'DM Sans',sans-serif",marginTop:10,padding:"10px 14px",background:"rgba(255,255,255,.02)",borderRadius:8,border:"1px solid rgba(255,255,255,.05)"}}>
+                Term not listed? Ask your local American Job Center Business Services Representative — they speak WIOA fluently and will explain any term in plain English.
               </div>
             </div>
           </div>
