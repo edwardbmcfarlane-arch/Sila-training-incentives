@@ -242,6 +242,60 @@ const STATE_LICENSES={
   }
 };
 
+// TRADE PROGRESSION — when can a tech work solo and start contributing to revenue?
+// solo: true=fully independent | "partial"=solo on some calls with caveats | false=must be supervised
+const TRADE_PROGRESSION={
+  HVAC:{
+    soloMilestone:"EPA 608 in unlicensed states · Journeyman/Mechanic License in licensed states",
+    soloTimeline:"3–6 months (PA/OH/DE/IL) · 1–3 years (CT/MA/NH/NJ/VA/VT/WI/MI/MD)",
+    levels:[
+      {icon:"🔧",level:"New Hire / Helper",range:"Month 1–3",solo:false,rev:"0–5%",note:"Must be supervised at all times. Assists journeyman on all calls — materials, staging, observation. No refrigerant contact without EPA 608. Safe habits, tool familiarity, van stocking. Generates no solo revenue."},
+      {icon:"🌡️",level:"EPA 608 Certified",range:"Month 3–6",solo:"partial",rev:"25–45%",note:"Critical milestone. Can now legally handle refrigerants. Performs maintenance calls, minor service repairs, assists on installs. In states with NO individual HVAC license requirement (PA, OH, DE, IL), can begin working solo on lower-complexity residential service calls after EPA 608. Revenue contribution rises quickly."},
+      {icon:"📋",level:"NATE Core + Systems Certified",range:"Month 6–18",solo:"partial",rev:"50–75%",note:"Diagnostic capability. Can complete most residential service calls independently in non-licensed states. In licensed states still needs journeyman, but productivity increases substantially — customer-facing, revenue-generating work with general (not constant) supervision."},
+      {icon:"✅",level:"Journeyman / Mechanic License",range:"Year 1–3 (licensed states)",solo:true,rev:"90–100%",note:"Full independent field capacity in ALL states. Required for solo work in CT, MA, NH, NJ, VA, VT, WI, MI, MD, ME. Can complete all installations, replacements, and service calls solo. Full single-tech truck revenue generation. The licensing exam is the gate."},
+      {icon:"⭐",level:"NATE Specialty + Master License",range:"Year 3+",solo:true,rev:"100% + premium",note:"Advanced diagnostics, complex commercial work, permit authority. Can supervise apprentices. Premium service capability commands higher rates. Full bench strength of a top-tier tech."}
+    ],
+    soloStates:{
+      "PA · OH · DE · IL (no individual HVAC license)":{milestone:"EPA 608 Certification",timeline:"~3–6 months",note:"No state-level individual HVAC technician license required. After passing EPA 608, a tech can work solo on customer calls in most residential service situations. Fastest path to independent revenue generation."},
+      "CT · MA · NH · NJ · VA · VT · WI · MI · MD":{milestone:"Journeyman / Mechanic License",timeline:"1–3 years supervised work + state exam",note:"Individual tech license required before solo customer work. Must work under a licensed technician until exam passed. Each state has its own exam — verify current exam requirements at the state licensing board."},
+      "NY · ME (varies by locality)":{milestone:"Varies — verify locally",timeline:"Check municipality",note:"NY is heavily locally regulated. NYC has specific license requirements. ME requires a mechanical contractor/technician license. Upstate NY varies by municipality. Always verify with local building department."}
+    }
+  },
+  Plumbing:{
+    soloMilestone:"Journeyman Plumber License",
+    soloTimeline:"3–5 years in ALL Sila states — no shortcuts",
+    levels:[
+      {icon:"🔧",level:"Plumbing Helper / Pre-Apprentice",range:"Month 1–6",solo:false,rev:"0–5%",note:"Must be directly supervised by a licensed journeyman or master plumber on every job. Assists — material handling, trenching, rough-in observation, staging. Cannot turn a wrench on any customer plumbing independently. Generates no solo revenue."},
+      {icon:"📋",level:"Registered Apprentice — Year 1–2",range:"Year 1–2",solo:false,rev:"15–30%",note:"Formal registered apprenticeship enrollment required. Licensed supervision required on all work. Builds code knowledge, rough-in skills, fixture installs. Productive team member but cannot be left solo on a job or customer site. Supervision must be on-site or very nearby."},
+      {icon:"🔩",level:"Registered Apprentice — Year 3–4",range:"Year 2–4",solo:"partial",rev:"35–55%",note:"Advanced rough-in, drain lines, water heater replacements, service work. Increasing competency — the licensed plumber is responsible but may not need to be physically present for every routine residential task. Licensed master/journeyman must be accessible by phone and must review/sign off on all work. Some states allow general supervision at this level for routine repairs."},
+      {icon:"✅",level:"Journeyman Plumber License",range:"Year 4–5",solo:true,rev:"90–100%",note:"Full independent field capacity. Can complete all residential and most commercial plumbing work solo — no supervisor required on site. Full revenue-generating customer calls. This is the gate to a self-sufficient plumbing tech. Required in ALL 15 Sila states."},
+      {icon:"⭐",level:"Master Plumber",range:"Year 5+",solo:true,rev:"100% + permits",note:"Can pull permits independently, run plumbing projects end-to-end, supervise apprentices. Required for company-level permit authority in most Sila states. NYC requires Master Plumber on staff for all permitted plumbing work."}
+    ],
+    soloStates:{
+      "All 15 Sila states":{milestone:"Journeyman Plumber License",timeline:"3–5 year apprenticeship + exam",note:"All 15 Sila states require a journeyman plumber license before a tech can work independently on customer plumbing work. This is a multi-year commitment — no state allows shortcuts. Plan your workforce pipeline accordingly: a plumber hired today isn't fully independent for 3–5 years."},
+      "NY — NYC specifically":{milestone:"NYC Board-Certified Master Plumber must be on staff",timeline:"MP license required for permit work",note:"NYC requires a Board-certified Master Plumber for all permitted plumbing work. T-Mark (Buffalo), Auchinachie (Binghamton), Astar, Jones Services, JSP must verify current NYC/upstate requirements."},
+      "PA — Philadelphia + Pittsburgh":{milestone:"City plumber's license (separate from state)",timeline:"City exam after achieving journeyman status",note:"Philadelphia and Pittsburgh require additional city-issued plumber licenses beyond the state Home Improvement Contractor registration. Adam Home, A-Comfort, Sullivan, Oxford, Triangle must verify city requirements."}
+    }
+  },
+  Electrical:{
+    soloMilestone:"Journeyman Electrician License",
+    soloTimeline:"3–5 years in ALL Sila states — no shortcuts",
+    levels:[
+      {icon:"🔧",level:"Electrical Helper / Pre-Apprentice",range:"Month 1–6",solo:false,rev:"0–5%",note:"Cannot perform ANY electrical work independently. Must work under direct, on-site supervision of a licensed journeyman electrician. Assists with materials, conduit pulling, fixture staging, cleanup. Strict safety protocols — code violations and safety hazards are a real liability without supervision. Generates no solo revenue."},
+      {icon:"📋",level:"Apprentice Electrician — Year 1–2",range:"Year 1–2",solo:false,rev:"10–25%",note:"Formal apprenticeship enrollment required. Supervision ratio: typically 1 licensed journeyman per 1–3 apprentices. Wiring fundamentals, circuit theory, NEC code study, receptacle/switch work. Cannot work solo on any permitted electrical work. All pull permits require a licensed electrician."},
+      {icon:"⚡",level:"Apprentice Electrician — Year 3–4",range:"Year 2–4",solo:"partial",rev:"35–55%",note:"Panel work, service upgrades, subpanel installs, troubleshooting. Increasing competency — a licensed electrician must be accessible (by phone) and is legally responsible for all permitted work. Some routine non-permitted tasks possible with general supervision. Rising productivity and customer interaction."},
+      {icon:"✅",level:"Journeyman Electrician License",range:"Year 3–5",solo:true,rev:"90–100%",note:"Full independent field capacity. Can complete residential and most light commercial electrical work independently — no supervisor required on site. Full single-tech revenue generation. Required in ALL 15 Sila states before solo customer work. The licensing exam is the critical gate."},
+      {icon:"⭐",level:"Master Electrician",range:"Year 5+",solo:true,rev:"100% + permits",note:"Can pull permits independently, design electrical systems, supervise apprentices. Required for company-level permit authority in most Sila states. NYC requires a licensed Master or Special Electrician for all NYC permit work."}
+    ],
+    soloStates:{
+      "All 15 Sila states":{milestone:"Journeyman Electrician License",timeline:"3–5 year apprenticeship + state exam",note:"All 15 Sila states require a journeyman electrician license before solo customer work. No state shortcuts. Plan workforce pipeline: an electrical apprentice hired today isn't fully independent for 3–5 years. Supervision ratios and costs are a real P&L consideration during the apprenticeship period."},
+      "IL — Chicago":{milestone:"City of Chicago Electrician License",timeline:"City-specific exam beyond state",note:"Chicago has its own electrical licensing system. AA Service Co. (Chicago) must verify current City of Chicago exam requirements and licensing tiers."},
+      "NY — NYC":{milestone:"NYC Master Electrician or Special Electrician",timeline:"NYC-specific exam; very competitive",note:"NYC has its own licensing board. Essential Power Systems (Lagrangeville), Jones, JSP, T-Mark (Buffalo) should verify upstate vs. NYC requirements. NYC exam is separate and notoriously difficult."},
+      "PA — Philadelphia + Pittsburgh":{milestone:"City electrical contractor license",timeline:"City exam after journeyman status",note:"Philadelphia and Pittsburgh require city electrical licenses beyond the state Home Improvement Contractor registration. Verify city requirements for Sila KoP, A-Comfort, Sullivan, and Triangle brands."}
+    }
+  }
+};
+
 const BASIC_REQUIREMENTS=[
   {icon:"📋",req:"Valid EIN + registered employer in your state",detail:"Required for all programs. Must be in good standing with state and federal tax authorities."},
   {icon:"📝",req:"Written training plan before training begins",detail:"Most grants require a documented in-house training plan BEFORE training starts. OJT agreements must precede the hire."},
@@ -553,6 +607,58 @@ Values represent maximum potential if all programs are pursued. Actual awards de
     </div>
   );
 
+  const ProgressionGuide=({trade})=>{
+    const[open,setOpen]=useState(false);
+    const prog=TRADE_PROGRESSION[trade];
+    if(!prog)return null;
+    return(
+      <div style={{marginTop:10,borderRadius:8,overflow:"hidden",border:"1px solid rgba(91,170,114,.2)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 12px",background:"rgba(91,170,114,.07)",cursor:"pointer",borderBottom:open?"1px solid rgba(91,170,114,.14)":"none"}} onClick={()=>setOpen(!open)}>
+          <div>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:"#5BAA72"}}>⏱ When can a {trade} tech work solo &amp; generate revenue?</div>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#3A6040",marginTop:1}}>{prog.soloMilestone}</div>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#2A4A30",marginTop:1}}>{prog.soloTimeline}</div>
+          </div>
+          <span style={{color:"#5BAA72",fontSize:12,flexShrink:0,marginLeft:8,fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>{open?"▲ close":"▼ view guide"}</span>
+        </div>
+        {open&&(
+          <div style={{padding:"13px 12px 8px",background:"rgba(0,0,0,.12)"}}>
+            <div className="cn" style={{marginBottom:7,color:"#3A6040"}}>Progression — supervision status &amp; revenue contribution at each stage</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:14}}>
+              {prog.levels.map((lvl,i)=>(
+                <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"10px 11px",borderRadius:7,background:lvl.solo===true?"rgba(91,170,114,.08)":lvl.solo==="partial"?"rgba(212,168,50,.06)":"rgba(255,80,80,.05)",border:`1px solid ${lvl.solo===true?"rgba(91,170,114,.22)":lvl.solo==="partial"?"rgba(212,168,50,.18)":"rgba(255,100,100,.12)"}`}}>
+                  <span style={{fontSize:20,flexShrink:0,lineHeight:1.1,marginTop:2}}>{lvl.icon}</span>
+                  <div style={{flex:1}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginBottom:4}}>
+                      <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:lvl.solo===true?"#5BAA72":lvl.solo==="partial"?"#D4A832":"#E0D8C8"}}>{lvl.level}</span>
+                      <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#4A6070",background:"rgba(255,255,255,.04)",padding:"1px 7px",borderRadius:100}}>{lvl.range}</span>
+                      <span className="badge" style={{background:lvl.solo===true?"rgba(91,170,114,.14)":lvl.solo==="partial"?"rgba(212,168,50,.12)":"rgba(220,70,70,.12)",color:lvl.solo===true?"#5BAA72":lvl.solo==="partial"?"#D4A832":"#C07070",border:"none",margin:0,fontSize:9,padding:"2px 8px"}}>
+                        {lvl.solo===true?"✅ Solo OK":lvl.solo==="partial"?"⚡ Solo w/ caveats":"👥 Must be supervised"}
+                      </span>
+                      <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:800,color:lvl.solo===true?"#5BAA72":lvl.solo==="partial"?"#D4A832":"#7A8A9A"}}>{lvl.rev}</span>
+                    </div>
+                    <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#5A7A8A",lineHeight:1.68}}>{lvl.note}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="cn" style={{marginBottom:7,color:"#3A6040"}}>Solo work eligibility — by state or area</div>
+            {Object.entries(prog.soloStates).map(([states,info],i)=>(
+              <div key={i} style={{display:"flex",gap:10,padding:"9px 11px",background:"rgba(255,255,255,.025)",borderRadius:8,marginBottom:5,border:"1px solid rgba(255,255,255,.06)",flexWrap:"wrap"}}>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,color:"#D4A832",minWidth:140,flexShrink:0,paddingTop:1}}>{states}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#C8C0B0",fontWeight:600,marginBottom:2}}>{info.milestone} · <span style={{color:"#5BAA72",fontWeight:700}}>{info.timeline}</span></div>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#4A6070",lineHeight:1.6}}>{info.note}</div>
+                </div>
+              </div>
+            ))}
+            <div style={{paddingBottom:6}}/>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#0A1826 0%,#0E2038 55%,#08141E 100%)"}}>
       <style>{SS}</style>
@@ -662,14 +768,26 @@ Values represent maximum potential if all programs are pursued. Actual awards de
                         {stateLicenses.all.map((l,i)=><LicenseRow key={i} l={l}/>)}
                       </div>
                     )}
-                    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(270px,1fr))",gap:16,paddingBottom:14}}>
-                      {selectedLoc.specialty.map(trade=>{
-                        const arr=stateLicenses[trade];
-                        if(!arr||arr.length===0)return null;
+                    <div style={{display:"flex",flexDirection:"column",gap:12,paddingBottom:14}}>
+                      {['HVAC','Plumbing','Electrical'].map(trade=>{
+                        const arr=stateLicenses[trade]||[];
+                        const brandDoes=selectedLoc&&selectedLoc.specialty.includes(trade);
+                        const tc=trade==="HVAC"?"#6ABFC0":trade==="Plumbing"?"#6B9EC7":"#A07CC5";
+                        const ti=trade==="HVAC"?"🌡️":trade==="Plumbing"?"🪠":"⚡";
                         return(
-                          <div key={trade}>
-                            <div className="cn" style={{marginBottom:7,color:trade==="HVAC"?"#6ABFC0":trade==="Plumbing"?"#6B9EC7":"#A07CC5"}}>{trade==="HVAC"?"🌡️":trade==="Plumbing"?"🪠":"⚡"} {trade}</div>
-                            {arr.map((l,i)=><LicenseRow key={i} l={l}/>)}
+                          <div key={trade} style={{borderRadius:10,padding:"13px 14px",background:brandDoes?"rgba(255,255,255,.02)":"rgba(255,255,255,.01)",border:brandDoes?"1px solid rgba(255,255,255,.08)":"1px solid rgba(255,255,255,.04)"}}>
+                            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:9,flexWrap:"wrap"}}>
+                              <div className="cn" style={{color:tc,fontSize:12,marginBottom:0}}>{ti} {trade}</div>
+                              {brandDoes
+                                ?<span className="badge" style={{background:"rgba(91,170,114,.12)",color:"#5BAA72",border:"1px solid rgba(91,170,114,.25)",margin:0,fontSize:9}}>✅ {selectedLoc.brand} performs {trade}</span>
+                                :<span className="badge" style={{background:"rgba(255,255,255,.04)",color:"#3A5060",border:"1px solid rgba(255,255,255,.06)",margin:0,fontSize:9}}>Reference — not this brand's primary trade</span>
+                              }
+                            </div>
+                            {arr.length>0
+                              ?arr.map((l,i)=><LicenseRow key={i} l={l}/>)
+                              :<div style={{fontSize:12,color:"#2A4050",padding:"8px 12px",borderRadius:7,background:"rgba(255,255,255,.02)",marginBottom:6,border:"1px solid rgba(255,255,255,.05)"}}>No {trade} license data on file for {selectedState}. Verify with the state licensing board.</div>
+                            }
+                            <ProgressionGuide trade={trade}/>
                           </div>
                         );
                       })}
