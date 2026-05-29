@@ -609,6 +609,10 @@ function App(){
   const[loc,setLoc]=useState("");
   const[brandSearch,setBrandSearch]=useState("");
   const[showSug,setShowSug]=useState(false);
+  const[customMode,setCustomMode]=useState(false);
+  const[customState,setCustomState]=useState("");
+  const[customTrades,setCustomTrades]=useState(new Set(["HVAC"]));
+  const[customBizName,setCustomBizName]=useState("");
   const[search,setSearch]=useState("");
   const[trade,setTrade]=useState("ALL");
   const[catF,setCatF]=useState("ALL");
@@ -639,17 +643,25 @@ function App(){
   const[s127A,setS127A]=useState(3000);
   const[txR,setTxR]=useState(25);
 
-  const selectedLoc=useMemo(()=>SILA_LOCATIONS.find(l=>`${l.brand}|${l.state}`===loc),[loc]);
+  const selectedLoc=useMemo(()=>{
+    if(customMode&&customState){
+      const trades=[...customTrades].length>0?[...customTrades]:["HVAC"];
+      return{brand:customBizName.trim()||"Your Business",city:"Custom Entry",state:customState,specialty:trades,emp:null,custom:true};
+    }
+    return SILA_LOCATIONS.find(l=>`${l.brand}|${l.state}`===loc);
+  },[loc,customMode,customState,customTrades,customBizName]);
   const selectedState=selectedLoc?selectedLoc.state:null;
   const stateName=selectedState?STATE_NAMES[selectedState]:null;
-  const stateLocations=useMemo(()=>selectedState?SILA_LOCATIONS.filter(l=>l.state===selectedState):[],[selectedState]);
+  const stateLocations=useMemo(()=>selectedState&&!selectedLoc?.custom?SILA_LOCATIONS.filter(l=>l.state===selectedState):[],[selectedState,selectedLoc]);
   const totalStateEmp=stateLocations.reduce((a,l)=>a+(l.emp||0),0);
   const stateLicenses=selectedState?STATE_LICENSES[selectedState]:null;
 
   const suggestions=useMemo(()=>{
-    if(brandSearch.length<2)return[];
+    if(brandSearch.length<2)return{brands:[],states:[]};
     const q=brandSearch.toLowerCase();
-    return SILA_LOCATIONS.filter(l=>l.brand.toLowerCase().includes(q)||l.city.toLowerCase().includes(q)||l.state.toLowerCase().includes(q)||(STATE_NAMES[l.state]||"").toLowerCase().includes(q)).slice(0,8);
+    const brands=SILA_LOCATIONS.filter(l=>l.brand.toLowerCase().includes(q)||l.city.toLowerCase().includes(q)||l.state.toLowerCase().includes(q)||(STATE_NAMES[l.state]||"").toLowerCase().includes(q)).slice(0,6);
+    const states=Object.entries(STATE_NAMES).filter(([code,name])=>name.toLowerCase().includes(q)||code.toLowerCase()===q).map(([code,name])=>({code,name})).slice(0,3);
+    return{brands,states};
   },[brandSearch]);
 
   const grouped=useMemo(()=>{
@@ -1191,52 +1203,140 @@ ${NEXT_STEPS.map((s,i)=>`
 
         {tab==="programs"&&(
           <div>
-            {/* Location picker with typeahead */}
+            {/* Location picker — dual mode: Sila brands OR any employer */}
             <div style={{background:"linear-gradient(135deg,rgba(212,168,50,.1),rgba(212,168,50,.03))",border:"1.5px solid rgba(212,168,50,.28)",borderRadius:13,padding:"18px 20px",marginBottom:18}}>
-              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
-                <span style={{fontSize:22}}>📍</span>
-                <div>
-                  <div style={{fontWeight:600,fontSize:14,color:"#F5EED8",fontFamily:"'DM Sans',sans-serif"}}>Select Your Work Location</div>
-                  <div style={{fontSize:12,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif"}}>Type a brand name, city, or state — or scroll the full list below</div>
-                </div>
+              {/* Mode toggle */}
+              <div style={{display:"flex",gap:0,borderRadius:9,overflow:"hidden",border:"1.5px solid rgba(212,168,50,.25)",marginBottom:16,width:"fit-content"}}>
+                <button onClick={()=>{setCustomMode(false);setCustomState("");setCustomBizName("");}} style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,padding:"8px 16px",cursor:"pointer",border:"none",transition:"all .15s",background:!customMode?"rgba(212,168,50,.2)":"rgba(255,255,255,.03)",color:!customMode?"#D4A832":"#7A9AAA"}}>
+                  🏢 Sila Brand Location
+                </button>
+                <button onClick={()=>{setCustomMode(true);setLoc("");setBrandSearch("");}} style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,padding:"8px 16px",cursor:"pointer",border:"none",borderLeft:"1px solid rgba(212,168,50,.2)",transition:"all .15s",background:customMode?"rgba(107,158,199,.18)":"rgba(255,255,255,.03)",color:customMode?"#78B5D8":"#7A9AAA"}}>
+                  🌐 Any Employer / External Use
+                </button>
               </div>
-              <div ref={searchRef} style={{position:"relative",marginBottom:10}}>
-                <input className="srch" placeholder="🔍  Type brand name, city, or state (e.g. Pittsburgh, Ohio, Dave's World...)" value={brandSearch}
-                  onChange={e=>{setBrandSearch(e.target.value);setShowSug(true);if(!e.target.value){setLoc("");} }}
-                  onFocus={()=>setShowSug(true)}
-                />
-                {showSug&&suggestions.length>0&&(
-                  <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,zIndex:200,background:"#0D1E30",border:"1.5px solid rgba(212,168,50,.4)",borderRadius:10,overflow:"hidden",boxShadow:"0 8px 30px rgba(0,0,0,.6)"}}>
-                    {suggestions.map(l=>(
-                      <div key={l.brand+l.state} className="sug-item" onClick={()=>{setLoc(`${l.brand}|${l.state}`);setBrandSearch(l.brand);setShowSug(false);}}>
-                        <div style={{fontSize:13,fontWeight:600,color:"#F0E8D4",fontFamily:"'DM Sans',sans-serif"}}>{l.brand}</div>
-                        <div style={{fontSize:11,color:"#7A9AAA",fontFamily:"'DM Sans',sans-serif"}}>{l.city}, {STATE_NAMES[l.state]} · {l.specialty.join(", ")}{l.emp?` · ${l.emp} employees`:""}</div>
-                      </div>
-                    ))}
+
+              {!customMode?(
+                <>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+                    <span style={{fontSize:20}}>📍</span>
+                    <div>
+                      <div style={{fontWeight:600,fontSize:14,color:"#F5EED8",fontFamily:"'DM Sans',sans-serif"}}>Select a Sila Brand Location</div>
+                      <div style={{fontSize:12,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif"}}>Type a brand name, city, or state — or browse the full list</div>
+                    </div>
                   </div>
-                )}
-              </div>
-              <div style={{position:"relative"}}>
-                <select className="srch" style={{appearance:"none",WebkitAppearance:"none",cursor:"pointer",paddingRight:36}} value={loc} onChange={e=>{setLoc(e.target.value);const f=SILA_LOCATIONS.find(l=>`${l.brand}|${l.state}`===e.target.value);if(f)setBrandSearch(f.brand);else setBrandSearch("");}}>
-                  <option value="">— Or browse all 45 locations —</option>
-                  {Object.entries(grouped).sort((a,b)=>a[0].localeCompare(b[0])).map(([st,locs])=>(
-                    <optgroup key={st} label={`── ${STATE_NAMES[st]||st} (${st}) ──`}>
-                      {locs.map(l=><option key={l.brand+l.state} value={`${l.brand}|${l.state}`}>{l.brand} — {l.city}{l.emp?` · ${l.emp} emp`:""}</option>)}
-                    </optgroup>
-                  ))}
-                </select>
-                <span style={{position:"absolute",right:13,top:"50%",transform:"translateY(-50%)",color:"#D4A832",pointerEvents:"none",fontSize:13}}>▾</span>
-              </div>
+                  <div ref={searchRef} style={{position:"relative",marginBottom:10}}>
+                    <input className="srch" placeholder="🔍  Type brand name, city, or state (e.g. Pittsburgh, Ohio, Dave's World...)" value={brandSearch}
+                      onChange={e=>{setBrandSearch(e.target.value);setShowSug(true);if(!e.target.value){setLoc("");}}}
+                      onFocus={()=>setShowSug(true)}
+                    />
+                    {showSug&&(suggestions.brands.length>0||suggestions.states.length>0)&&(
+                      <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,zIndex:200,background:"#0D1E30",border:"1.5px solid rgba(212,168,50,.4)",borderRadius:10,overflow:"hidden",boxShadow:"0 8px 30px rgba(0,0,0,.6)"}}>
+                        {suggestions.brands.map(l=>(
+                          <div key={l.brand+l.state} className="sug-item" onClick={()=>{setLoc(`${l.brand}|${l.state}`);setBrandSearch(l.brand);setShowSug(false);}}>
+                            <div style={{fontSize:13,fontWeight:600,color:"#F0E8D4",fontFamily:"'DM Sans',sans-serif"}}>{l.brand}</div>
+                            <div style={{fontSize:11,color:"#7A9AAA",fontFamily:"'DM Sans',sans-serif"}}>{l.city}, {STATE_NAMES[l.state]} · {l.specialty.join(", ")}{l.emp?` · ${l.emp} employees`:""}</div>
+                          </div>
+                        ))}
+                        {suggestions.states.length>0&&(
+                          <>
+                            {suggestions.brands.length>0&&<div style={{fontSize:10,color:"#7A9AAA",fontFamily:"'DM Sans',sans-serif",padding:"5px 14px 2px",borderTop:"1px solid rgba(255,255,255,.06)"}}>STATE-LEVEL PROGRAMS</div>}
+                            {suggestions.states.map(s=>(
+                              <div key={s.code} className="sug-item" style={{background:"rgba(107,158,199,.05)"}} onClick={()=>{setCustomMode(true);setCustomState(s.code);setBrandSearch("");setShowSug(false);}}>
+                                <div style={{fontSize:13,fontWeight:600,color:"#78B5D8",fontFamily:"'DM Sans',sans-serif"}}>📍 {s.name} — any employer</div>
+                                <div style={{fontSize:11,color:"#7A9AAA",fontFamily:"'DM Sans',sans-serif"}}>Switches to external mode · show all {s.name} programs + licenses</div>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                        {suggestions.brands.length===0&&suggestions.states.length===0&&brandSearch.length>2&&(
+                          <div style={{padding:"12px 14px"}}>
+                            <div style={{fontSize:12,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif",marginBottom:6}}>No Sila brands match "{brandSearch}"</div>
+                            <button onClick={()=>{setCustomMode(true);setShowSug(false);}} style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:"#78B5D8",background:"rgba(107,158,199,.12)",border:"1.5px solid rgba(107,158,199,.3)",borderRadius:7,padding:"6px 12px",cursor:"pointer"}}>
+                              🌐 Switch to external mode to enter any location →
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{position:"relative"}}>
+                    <select className="srch" style={{appearance:"none",WebkitAppearance:"none",cursor:"pointer",paddingRight:36}} value={loc} onChange={e=>{setLoc(e.target.value);const f=SILA_LOCATIONS.find(l=>`${l.brand}|${l.state}`===e.target.value);if(f)setBrandSearch(f.brand);else setBrandSearch("");}}>
+                      <option value="">— Or browse all {SILA_LOCATIONS.filter(l=>!l.custom).length} locations —</option>
+                      {Object.entries(grouped).sort((a,b)=>a[0].localeCompare(b[0])).map(([st,locs])=>(
+                        <optgroup key={st} label={`── ${STATE_NAMES[st]||st} (${st}) ──`}>
+                          {locs.filter(l=>!l.custom).map(l=><option key={l.brand+l.state} value={`${l.brand}|${l.state}`}>{l.brand} — {l.city}{l.emp?` · ${l.emp} emp`:""}</option>)}
+                        </optgroup>
+                      ))}
+                    </select>
+                    <span style={{position:"absolute",right:13,top:"50%",transform:"translateY(-50%)",color:"#D4A832",pointerEvents:"none",fontSize:13}}>▾</span>
+                  </div>
+                </>
+              ):(
+                <>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+                    <span style={{fontSize:20}}>🌐</span>
+                    <div>
+                      <div style={{fontWeight:600,fontSize:14,color:"#78B5D8",fontFamily:"'DM Sans',sans-serif"}}>External / Custom Location</div>
+                      <div style={{fontSize:12,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif"}}>Any trades employer can use this tool — enter your details below</div>
+                    </div>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
+                    <div>
+                      <div className="cn" style={{marginBottom:5}}>Business Name <span style={{color:"#7A9AAA",fontWeight:400}}>(optional)</span></div>
+                      <input className="srch" placeholder="e.g. Acme Heating & Cooling" value={customBizName} onChange={e=>setCustomBizName(e.target.value)} style={{fontSize:13}}/>
+                    </div>
+                    <div>
+                      <div className="cn" style={{marginBottom:5}}>State <span style={{color:"#C07070",fontWeight:400}}>*required</span></div>
+                      <div style={{position:"relative"}}>
+                        <select className="srch" style={{appearance:"none",WebkitAppearance:"none",paddingRight:36,cursor:"pointer",fontSize:13,borderColor:customState?"rgba(107,158,199,.5)":"rgba(107,158,199,.25)"}} value={customState} onChange={e=>setCustomState(e.target.value)}>
+                          <option value="">— Select your state —</option>
+                          {Object.entries(STATE_NAMES).sort((a,b)=>a[1].localeCompare(b[1])).map(([code,name])=>(
+                            <option key={code} value={code}>{name} ({code})</option>
+                          ))}
+                        </select>
+                        <span style={{position:"absolute",right:13,top:"50%",transform:"translateY(-50%)",color:"#6B9EC7",pointerEvents:"none",fontSize:13}}>▾</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="cn" style={{marginBottom:8}}>Trades your business performs</div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {["HVAC","Plumbing","Electrical"].map(t=>{
+                        const on=customTrades.has(t);
+                        return(
+                          <button key={t} onClick={()=>setCustomTrades(prev=>{const n=new Set(prev);n.has(t)?n.size>1&&n.delete(t):n.add(t);return n;})}
+                            style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,padding:"8px 16px",borderRadius:8,cursor:"pointer",border:"1.5px solid",transition:"all .15s",
+                              background:on?"rgba(106,191,192,.15)":"rgba(255,255,255,.04)",
+                              borderColor:on?"rgba(106,191,192,.5)":"rgba(255,255,255,.1)",
+                              color:on?"#6ABFC0":"#7A9AAA"}}>
+                            {t==="HVAC"?"🌡️":t==="Plumbing"?"🪠":"⚡"} {t}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div style={{fontSize:11,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif",marginTop:6}}>At least one trade required — drives which license requirements are shown</div>
+                  </div>
+                  {!customState&&(
+                    <div style={{marginTop:10,fontSize:12,color:"#C07070",fontFamily:"'DM Sans',sans-serif",display:"flex",alignItems:"center",gap:6}}>
+                      <span>⬆</span> Select your state to see available programs
+                    </div>
+                  )}
+                </>
+              )}
+
               {selectedLoc&&(
-                <div style={{marginTop:14,paddingTop:14,borderTop:"1px solid rgba(212,168,50,.15)",display:"flex",flexWrap:"wrap",gap:10,alignItems:"center"}}>
-                  <div><span style={{fontSize:14,fontWeight:700,color:"#F5EED8",fontFamily:"'DM Sans',sans-serif"}}>{selectedLoc.brand}</span>
-                    <span style={{fontSize:13,color:"#7A9AAA",marginLeft:8,fontFamily:"'DM Sans',sans-serif"}}>{selectedLoc.city}, {selectedLoc.state}</span></div>
+                <div style={{marginTop:14,paddingTop:14,borderTop:`1px solid ${selectedLoc.custom?"rgba(107,158,199,.2)":"rgba(212,168,50,.15)"}`,display:"flex",flexWrap:"wrap",gap:10,alignItems:"center"}}>
+                  <div>
+                    <span style={{fontSize:14,fontWeight:700,color:"#F5EED8",fontFamily:"'DM Sans',sans-serif"}}>{selectedLoc.brand}</span>
+                    {selectedLoc.custom&&<span className="badge" style={{background:"rgba(107,158,199,.14)",color:"#78B5D8",border:"1px solid rgba(107,158,199,.3)",marginLeft:8,fontSize:9}}>EXTERNAL</span>}
+                    <span style={{fontSize:13,color:"#7A9AAA",marginLeft:8,fontFamily:"'DM Sans',sans-serif"}}>{selectedLoc.custom?selectedLoc.state:`${selectedLoc.city}, ${selectedLoc.state}`}</span>
+                  </div>
                   <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                     {selectedLoc.specialty.map(s=><span key={s} className="badge" style={{background:"rgba(106,191,192,.12)",color:"#6ABFC0",border:"1px solid rgba(106,191,192,.25)"}}>{s}</span>)}
                   </div>
                   <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
                     <span className="state-pill">{stateName} Programs Active</span>
-                    {stateLocations.length>1&&<span style={{fontSize:11,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif"}}>{stateLocations.length} brands · {totalStateEmp>0?`${totalStateEmp}+`:""} employees in {selectedLoc.state}</span>}
+                    {!selectedLoc.custom&&stateLocations.length>1&&<span style={{fontSize:11,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif"}}>{stateLocations.length} brands · {totalStateEmp>0?`${totalStateEmp}+`:""} employees in {selectedLoc.state}</span>}
                   </div>
                 </div>
               )}
@@ -1250,7 +1350,7 @@ ${NEXT_STEPS.map((s,i)=>`
                     <span style={{fontSize:18}}>🪪</span>
                     <div>
                       <div className="serif" style={{fontSize:16,color:"#78B5D8"}}>Required Licenses — {stateName}</div>
-                      <div style={{fontSize:12,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif",marginTop:1}}>State &amp; federal license requirements for {selectedLoc.specialty.join(", ")} work in {selectedLoc.state}</div>
+                      <div style={{fontSize:12,color:"#8AABBC",fontFamily:"'DM Sans',sans-serif",marginTop:1}}>State &amp; federal license requirements for {selectedLoc.specialty.join(", ")} work in {selectedLoc.state}{selectedLoc.custom?" — external employer view":""}</div>
                     </div>
                   </div>
                   <div style={{color:"#6B9EC7",fontSize:16}}>{licOpen?"▲":"▼"}</div>
